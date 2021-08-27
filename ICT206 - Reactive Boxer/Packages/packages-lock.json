@@ -1,8 +1,8 @@
 {
   "dependencies": {
-    "com.unity.collab-proxy": {
-      "version": "1.2.16",
-      "depth": 0,
+    "com.autodesk.fbx": {
+      "version": "4.0.1",
+      "depth": 1,
       "source": "registry",
       "dependencies": {},
       "url": "https://packages.unity.com"
@@ -14,12 +14,13 @@
       "dependencies": {},
       "url": "https://packages.unity.com"
     },
-    "com.unity.ide.rider": {
-      "version": "1.1.4",
+    "com.unity.formats.fbx": {
+      "version": "4.0.1",
       "depth": 0,
       "source": "registry",
       "dependencies": {
-        "com.unity.test-framework": "1.1.1"
+        "com.unity.timeline": "1.0.0",
+        "com.autodesk.fbx": "4.0.1"
       },
       "url": "https://packages.unity.com"
     },
@@ -52,7 +53,7 @@
     },
     "com.unity.timeline": {
       "version": "1.2.18",
-      "depth": 0,
+      "depth": 1,
       "source": "registry",
       "dependencies": {
         "com.unity.modules.director": "1.0.0",
@@ -160,14 +161,6 @@
       "source": "builtin",
       "dependencies": {
         "com.unity.modules.imageconversion": "1.0.0"
-      }
-    },
-    "com.unity.modules.subsystems": {
-      "version": "1.0.0",
-      "depth": 1,
-      "source": "builtin",
-      "dependencies": {
-        "com.unity.modules.jsonserialize": "1.0.0"
       }
     },
     "com.unity.modules.terrain": {
@@ -287,31 +280,11 @@
         "com.unity.modules.unitywebrequest": "1.0.0"
       }
     },
-    "com.unity.modules.vr": {
-      "version": "1.0.0",
-      "depth": 0,
-      "source": "builtin",
-      "dependencies": {
-        "com.unity.modules.jsonserialize": "1.0.0",
-        "com.unity.modules.physics": "1.0.0",
-        "com.unity.modules.xr": "1.0.0"
-      }
-    },
     "com.unity.modules.wind": {
       "version": "1.0.0",
       "depth": 0,
       "source": "builtin",
       "dependencies": {}
-    },
-    "com.unity.modules.xr": {
-      "version": "1.0.0",
-      "depth": 0,
-      "source": "builtin",
-      "dependencies": {
-        "com.unity.modules.physics": "1.0.0",
-        "com.unity.modules.jsonserialize": "1.0.0",
-        "com.unity.modules.subsystems": "1.0.0"
-      }
     }
   }
 }

@@ -3,7 +3,33 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - PunchingBagRoom
+  - SpeedBallRoom
+  - projectile
+  - FxTemporaire
+  - BoxingBagGame
+  - BoxingBag
+  - MirrorCam
+  - RightGlove
+  - LeftGlove
+  - Spawner
+  - MainRoom
+  - Key
+  - AgilityGameManager
+  - despawn
+  - Pointer
+  - intro
+  - Yes
+  - No
+  - Stretch
+  - Bot
+  - AgilityGameObject
+  - MiniGameManager
+  - StartButton
+  - SpeedBallManager
+  - AgilityGameRoom
+  - EndRoom
   layers:
   - Default
   - TransparentFX
