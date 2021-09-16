@@ -4,7 +4,6 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - PunchingBagRoom
   - SpeedBallRoom
   - projectile
   - FxTemporaire
@@ -29,7 +28,6 @@ TagManager:
   - StartButton
   - SpeedBallManager
   - AgilityGameRoom
-  - EndRoom
   layers:
   - Default
   - TransparentFX
