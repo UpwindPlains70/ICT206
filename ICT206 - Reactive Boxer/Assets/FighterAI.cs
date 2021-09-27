@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Collections;
-using System.Collections.Generic;
+//using System.Collections;
+//using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -13,7 +13,7 @@ public class FighterAI : MonoBehaviour
         get { return _CurrentState; }
         set
         {
-            StopAllCoroutines();
+            //StopAllCoroutines();
             _CurrentState = value;
             switch (_CurrentState)
             {
@@ -41,20 +41,52 @@ public class FighterAI : MonoBehaviour
             }
         }
     }
+    
     [SerializeField]
     private AISTATE _CurrentState = AISTATE.CHASE;
     private NavMeshAgent ThisAgent = null;
     [SerializeField]
-    private Transform Oponent;
+    private Transform Oponent; 
+    [SerializeField]
+    private Transform OponentLeftGlove; 
+    [SerializeField]
+    private Transform OponentRightGlove;
+
     private Transform ThisTransform = null;
-    //public ParticleSystem WeaponPS = null;
+    private float attackRange = 0.8f;
+
+    private FighterHealth FHealthScript;
+    private Animator anim;
+
+    private float highAttackCost = 15;
+    private float lowAttackCost = 5;
+
+    //Stores local refences to Fighter health values
+    private int fitnessLevel, reactionLevel, blockChance;
+
+    private void OnValidate()
+    {
+            //Restrict customization values
+        //highAttackCost = Mathf.Clamp(highAttackCost, 5, FHealthScript.Stamina);
+        //lowAttackCost = Mathf.Clamp(lowAttackCost, 2, FHealthScript.Stamina);
+    }
+
     private void Awake()
     {
+            //store reference to health/stamina so effects can be applied
+        FHealthScript = GetComponent<FighterHealth>();
+            //Store animator
+        anim = GetComponent<Animator>();
         ThisAgent = GetComponent<NavMeshAgent>();
-        //ThisPlayer = GameObject.FindWithTag("Player").
-        GetComponent<Transform>();
+
+        //GetComponent<Transform>();
         ThisTransform = GetComponent<Transform>();
+
+        fitnessLevel = FHealthScript.fitnessLevel;
+        reactionLevel = FHealthScript.reactionLevel;
+        blockChance = FHealthScript.blockChance;
     }
+
     private void Start()
     {
         CurrentState = _CurrentState;
@@ -62,12 +94,12 @@ public class FighterAI : MonoBehaviour
     private void OnEnable()
     {
         CurrentState = AISTATE.CHASE;
-        Debug.Log("enabled");
+        //Debug.Log("enabled");
     }
     private void OnDisable()
     {
         StopAllCoroutines();
-        Debug.Log("disabled");
+        //Debug.Log("disabled");
     }
 
     public void FixedUpdate()
@@ -79,18 +111,20 @@ public class FighterAI : MonoBehaviour
         lookRot.x = 0; lookRot.z = 0;
         transform.rotation = Quaternion.Slerp(transform.rotation, lookRot, Mathf.Clamp01(3.0f * Time.maximumDeltaTime));
     }
+
     public IEnumerator StateChase()
     {
-        Debug.Log("chase");
         while (CurrentState == AISTATE.CHASE)
         {
             //Check distance
             float DistancetoDest = Vector3.Distance(ThisTransform.position,
             Oponent.position);
+
             if (Mathf.Approximately(DistancetoDest, ThisAgent.stoppingDistance) ||
-            DistancetoDest <= ThisAgent.stoppingDistance)
+            DistancetoDest <= attackRange)
             {
-                //CurrentState = AISTATE.ATTACK;
+                //update current state
+                CurrentState = _CurrentState = AISTATE.ATTACKHIGH;
                 yield break;
             }
             yield return null;
@@ -100,21 +134,44 @@ public class FighterAI : MonoBehaviour
     {
         while (CurrentState == AISTATE.ATTACKHIGH)
         {
-            Vector3 Dir = (Oponent.position - ThisTransform.position).
-            normalized;
-            Dir.y = 0;
-            ThisTransform.rotation = Quaternion.LookRotation(Dir, Vector3.up);
-            yield return null;
+            anim.SetBool("attackHigh", true);
+           
+                //Wait for animation to finish until applying stamina penalty
+            yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length);
+
+            FHealthScript.Stamina -= highAttackCost;
+            if (FHealthScript.Stamina < highAttackCost || FHealthScript.Stamina <= Random.Range(0, fitnessLevel))
+            {
+                anim.SetBool("attackHigh", false);
+                //80% chance to block
+                if (Random.Range(0, reactionLevel) > blockChance)
+                    CurrentState = _CurrentState = AISTATE.BLOCK;
+                else
+                    CurrentState = _CurrentState = AISTATE.RETREAT;
+            }
+        yield return null;
         }
     }
+
     public IEnumerator StateAttackLow()
     {
         while (CurrentState == AISTATE.ATTACKLOW)
         {
-            Vector3 Dir = (Oponent.position - ThisTransform.position).
-            normalized;
-            Dir.y = 0;
-            ThisTransform.rotation = Quaternion.LookRotation(Dir, Vector3.up);
+            anim.SetBool("attackLow", true);
+
+            //Wait for animation to finish until applying stamina penalty
+            yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length);
+
+            FHealthScript.Stamina -= lowAttackCost;
+            if (FHealthScript.Stamina < lowAttackCost || FHealthScript.Stamina <= Random.Range(0, fitnessLevel))
+            {
+                anim.SetBool("attackLow", false);
+                    //80% chance to block
+                if (Random.Range(0, reactionLevel) > blockChance)
+                    CurrentState = _CurrentState = AISTATE.BLOCK;
+                else
+                    CurrentState = _CurrentState = AISTATE.RETREAT;
+            }
             yield return null;
         }
     }
@@ -123,13 +180,16 @@ public class FighterAI : MonoBehaviour
     {
         while (CurrentState == AISTATE.BLOCK)
         {
-            Vector3 Dir = (Oponent.position - ThisTransform.position).
-            normalized;
-            Dir.y = 0;
-            ThisTransform.rotation = Quaternion.LookRotation(Dir, Vector3.up);
+            StartCoroutine(FHealthScript.recoverStamina());
+
+            ActionAfterRecovery();
+
             yield return null;
         }
     }
+
+   
+
     public IEnumerator StateDodgeHigh()
     {
         while (CurrentState == AISTATE.DODGEHIGH)
@@ -156,11 +216,20 @@ public class FighterAI : MonoBehaviour
     {
         while (CurrentState == AISTATE.RETREAT)
         {
-            Vector3 Dir = (Oponent.position - ThisTransform.position).
-            normalized;
-            Dir.y = 0;
-            ThisTransform.rotation = Quaternion.LookRotation(Dir, Vector3.up);
+            StartCoroutine(FHealthScript.recoverStamina());
+
+            ActionAfterRecovery();
+
             yield return null;
         }
+    }
+
+    private void ActionAfterRecovery()
+    {
+        //Use random range to prevent AI from attacking with minimal stamina
+        if (FHealthScript.Stamina >= (highAttackCost + Random.Range(0, fitnessLevel)))
+            CurrentState = _CurrentState = AISTATE.ATTACKHIGH;
+        else if (FHealthScript.Stamina >= (lowAttackCost + Random.Range(0, fitnessLevel)))
+            CurrentState = _CurrentState = AISTATE.ATTACKLOW;
     }
 }
