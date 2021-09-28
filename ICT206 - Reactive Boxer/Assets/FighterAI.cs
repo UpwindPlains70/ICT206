@@ -41,10 +41,12 @@ public class FighterAI : MonoBehaviour
                     StartCoroutine(StateRetreat());
                     break;
                 case AISTATE.DEFEAT:
-                    //StartCoroutine(StateDefeat());
+                    StopAllCoroutines();
+                    StartCoroutine(StateDefeat());
                     break;
                 case AISTATE.VICTORY:
-                    StartCoroutine(Oponent.GetComponent<FighterHealth>().Victory());
+                    StopAllCoroutines();
+                    StartCoroutine(StateVictory());
                     break;
             }
         }
@@ -62,7 +64,7 @@ public class FighterAI : MonoBehaviour
     private Transform OponentRightGlove;
 
     private Transform ThisTransform = null;
-    private float attackRange = 0.8f;
+    private float attackRange = 1.0f;
     public float oponentDistanceOnRetreat = 2.0f;
 
     private FighterHealth FHealthScript;
@@ -114,32 +116,66 @@ public class FighterAI : MonoBehaviour
 
     public void FixedUpdate()
     {
-            //Keep track of moving target
+        if (CurrentState != AISTATE.DEFEAT && CurrentState != AISTATE.VICTORY)
+        {
+            LookAtOponent();
+
+            if (FHealthScript.HealthPoints <= 0 && CurrentState != AISTATE.DEFEAT)
+            {
+                CurrentState = _CurrentState = AISTATE.DEFEAT;
+                Oponent.GetComponent<FighterAI>().CurrentState = AISTATE.VICTORY;
+            }
+
+            
+            if (CurrentState == AISTATE.RETREAT)
+            {
+                EvadeOponent();
+            }
+
+            //if(CurrentState != AISTATE.CHASE)
+              //  subtleMovement();
+            
+        }
+    }
+
+    private void EvadeOponent()
+    {
+        float distance = Vector3.Distance(transform.position, Oponent.position);
+
+        if (distance < oponentDistanceOnRetreat)
+        {
+            Vector3 dirToOponent = transform.position - Oponent.position;
+
+            Vector3 newPos = transform.position + dirToOponent;
+
+            ThisAgent.SetDestination(newPos);
+        }
+    }
+
+    private void LookAtOponent()
+    {
+        //Keep track of moving target
         ThisAgent.SetDestination(Oponent.position);
         Vector3 dir = Oponent.position - transform.position;
         Quaternion lookRot = Quaternion.LookRotation(dir);
         lookRot.x = 0; lookRot.z = 0;
         transform.rotation = Quaternion.Slerp(transform.rotation, lookRot, Mathf.Clamp01(3.0f * Time.maximumDeltaTime));
+    }
 
-        if (FHealthScript.HealthPoints <= 0 && CurrentState != AISTATE.DEFEAT)
-        {
-            //Debug.Log("END");
-            //CurrentState = _CurrentState = AISTATE.DEFEAT;
-        }
+    private void subtleMovement()
+    {
+        Vector3 dirToOponent = Vector3.zero;
 
-        if (CurrentState == AISTATE.RETREAT)
-        {
-            float distance = Vector3.Distance(transform.position, Oponent.position);
+            if (Random.Range(0, 1) == 1)
+                dirToOponent = transform.position + Oponent.position;
+            else
+                dirToOponent = transform.position - Oponent.position;
+            
+            CurrentState = _CurrentState = AISTATE.CHASE;
 
-            if (distance < oponentDistanceOnRetreat)
-            {
-                Vector3 dirToOponent = transform.position - Oponent.position;
+            Vector3 newPos = transform.position + dirToOponent;
 
-                Vector3 newPos = transform.position + dirToOponent;
-
-                ThisAgent.SetDestination(newPos);
-            }
-        }
+            ThisAgent.SetDestination(newPos);
     }
 
     public IEnumerator StateChase()
@@ -154,7 +190,11 @@ public class FighterAI : MonoBehaviour
             DistancetoDest <= attackRange)
             {
                 //update current state
-                CurrentState = _CurrentState = AISTATE.ATTACKHIGH;
+                //if(Random.Range(0,1) == 1)
+                  //  CurrentState = _CurrentState = AISTATE.ATTACKHIGH;
+               // else
+                    CurrentState = _CurrentState = AISTATE.ATTACKLOW;
+
                 yield break;
             }
             yield return null;
@@ -164,14 +204,8 @@ public class FighterAI : MonoBehaviour
     {
         while (CurrentState == AISTATE.ATTACKHIGH)
         {
+            //Debug.Log("Att H");
             anim.SetBool("attackHigh", true);
-
-            if (FHealthScript.HealthPoints <= 0)
-            {
-                //Debug.Log("END");
-                CurrentState = _CurrentState = AISTATE.DEFEAT;
-                break;
-            }
 
             //Wait for animation to finish until applying stamina penalty
             yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length);
@@ -194,8 +228,9 @@ public class FighterAI : MonoBehaviour
     {
         while (CurrentState == AISTATE.ATTACKLOW)
         {
+            //Debug.Log("Att L");
             anim.SetBool("attackLow", true);
-
+            
             //Wait for animation to finish until applying stamina penalty
             yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length);
 
@@ -275,11 +310,22 @@ public class FighterAI : MonoBehaviour
 
     public IEnumerator StateDefeat()
     {
-        //Debug.Log("Defeat............");
-            anim.SetBool("Defeat", true);
-            anim.SetFloat("DefeatType", 0);
+        anim.StopPlayback();
+        anim.SetBool("Defeat", true);
+        anim.SetFloat("DefeatType", 0);
             
         ThisAgent.enabled = false;
             yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length);
+    }
+
+    public IEnumerator StateVictory()
+    {
+        anim.StopPlayback();
+        anim.SetBool("Victory", true);
+
+        ThisAgent.enabled = false;
+
+
+        yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length);
     }
 }

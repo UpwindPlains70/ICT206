@@ -2458,7 +2458,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 919132147850544046}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.35
+  m_Radius: 0.4
   m_Speed: 0.5
   m_Acceleration: 8
   avoidancePriority: 50
@@ -3490,7 +3490,7 @@ MonoBehaviour:
   lowAttackCost: 5
   fitnessLevel: 50
   reactionLevel: 50
-  nonBlockingChance: 20
+  nonBlockingChance: 100
   recoveryRate: 50
   staminaRecovery: 50
   healthRecovery: 50
@@ -7029,7 +7029,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 4548404645753961075}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.35
+  m_Radius: 0.4
   m_Speed: 1
   m_Acceleration: 8
   avoidancePriority: 50

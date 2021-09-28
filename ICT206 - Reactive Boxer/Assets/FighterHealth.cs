@@ -40,11 +40,10 @@ public class FighterHealth : MonoBehaviour
     //Amount health is recovered
     public int healthRecovery = 5;
 
-    private Animator anim;
     private void OnValidate()
     {
             //Min Max health information
-        _HealthPoints = Mathf.Clamp(_HealthPoints, 50, 1000);
+        _HealthPoints = Mathf.Clamp(_HealthPoints, 10, 1000);
         healthRecoveryChance = Mathf.Clamp(healthRecoveryChance, 1, 10);
         healthRecovery = Mathf.Clamp(healthRecovery, 50, 1000);
         
@@ -75,11 +74,11 @@ public class FighterHealth : MonoBehaviour
                 _HealthPoints = _MaxHealthDefault;
 
             //Handled in AI
-            if (_HealthPoints <= 0)
+            /*if (_HealthPoints <= 0)
             {
                 //StopAllCoroutines();
-                StartCoroutine(StateDefeat());
-            }
+                //StartCoroutine(myAI.StateDefeat());
+            }*/
         }
     }
     public float Stamina
@@ -109,28 +108,6 @@ public class FighterHealth : MonoBehaviour
     {
         _MaxStaminaDefault = _MaxStamina;
         _MaxHealthDefault = _HealthPoints;
-        anim = GetComponent<Animator>();
-    }
-    
-    private IEnumerator StateDefeat()
-    {
-        anim.SetBool("Defeat", true);
-        //anim.SetFloat("DefeatType", 0);
-        Debug.Log("def.");
-        GetComponent<NavMeshAgent>().enabled = false;
-
-        yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length);
-    }
-
-    public IEnumerator Victory()
-    {
-        //Debug.Log("Vic");
-        anim.Play("Victory");
-        //anim.SetBool("Victory", true);
-
-        GetComponent<NavMeshAgent>().enabled = false;
-
-        yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length);
     }
 
     public IEnumerator Recover()
