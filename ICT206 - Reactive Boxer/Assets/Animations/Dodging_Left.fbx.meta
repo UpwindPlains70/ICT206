@@ -1,11 +1,11 @@
 fileFormatVersion: 2
-guid: 49730fccf1bffe04f89fbf5099a023c1
+guid: 002788d4ba20a09489f36ca56bc00a22
 ModelImporter:
   serializedVersion: 19301
   internalIDToNameTable:
   - first:
       74: -203655887218126122
-    second: Knock_Out_Right
+    second: Dodging_Left
   externalObjects: {}
   materials:
     materialImportMode: 1
@@ -35,18 +35,18 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Knock_Out_Right
+      name: Dodging_Left
       takeName: mixamo.com
       internalID: 0
-      firstFrame: 20
-      lastFrame: 148
+      firstFrame: 0
+      lastFrame: 70
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 0
+      loopTime: 1
       loopBlend: 1
       loopBlendOrientation: 1
       loopBlendPositionY: 1

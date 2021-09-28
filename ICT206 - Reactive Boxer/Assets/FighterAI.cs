@@ -5,9 +5,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
+[RequireComponent(typeof(Animator))]
+[RequireComponent(typeof(FighterHealth))]
 public class FighterAI : MonoBehaviour
 {
-    public enum AISTATE { CHASE = 0, ATTACKLOW = 1, ATTACKHIGH = 2, BLOCK = 3, DODGEHIGH = 4, DODGELOW = 5, RETREAT = 6 };
+    public enum AISTATE { CHASE = 0, ATTACKLOW = 1, ATTACKHIGH = 2, BLOCK = 3, DODGEHIGH = 4, DODGELOW = 5, RETREAT = 6, DEFEAT = 7, VICTORY = 8};
     public AISTATE CurrentState
     {
         get { return _CurrentState; }
@@ -38,12 +40,19 @@ public class FighterAI : MonoBehaviour
                 case AISTATE.RETREAT:
                     StartCoroutine(StateRetreat());
                     break;
+                case AISTATE.DEFEAT:
+                    //StartCoroutine(StateDefeat());
+                    break;
+                case AISTATE.VICTORY:
+                    StartCoroutine(Oponent.GetComponent<FighterHealth>().Victory());
+                    break;
             }
         }
     }
     
     [SerializeField]
     private AISTATE _CurrentState = AISTATE.CHASE;
+
     private NavMeshAgent ThisAgent = null;
     [SerializeField]
     private Transform Oponent; 
@@ -54,6 +63,7 @@ public class FighterAI : MonoBehaviour
 
     private Transform ThisTransform = null;
     private float attackRange = 0.8f;
+    public float oponentDistanceOnRetreat = 2.0f;
 
     private FighterHealth FHealthScript;
     private Animator anim;
@@ -62,7 +72,7 @@ public class FighterAI : MonoBehaviour
     private float lowAttackCost = 5;
 
     //Stores local refences to Fighter health values
-    private int fitnessLevel, reactionLevel, blockChance;
+    private int fitnessLevel, reactionLevel, nonBlockingChance;
 
     private void OnValidate()
     {
@@ -84,7 +94,7 @@ public class FighterAI : MonoBehaviour
 
         fitnessLevel = FHealthScript.fitnessLevel;
         reactionLevel = FHealthScript.reactionLevel;
-        blockChance = FHealthScript.blockChance;
+        nonBlockingChance = FHealthScript.nonBlockingChance;
     }
 
     private void Start()
@@ -110,6 +120,26 @@ public class FighterAI : MonoBehaviour
         Quaternion lookRot = Quaternion.LookRotation(dir);
         lookRot.x = 0; lookRot.z = 0;
         transform.rotation = Quaternion.Slerp(transform.rotation, lookRot, Mathf.Clamp01(3.0f * Time.maximumDeltaTime));
+
+        if (FHealthScript.HealthPoints <= 0 && CurrentState != AISTATE.DEFEAT)
+        {
+            //Debug.Log("END");
+            //CurrentState = _CurrentState = AISTATE.DEFEAT;
+        }
+
+        if (CurrentState == AISTATE.RETREAT)
+        {
+            float distance = Vector3.Distance(transform.position, Oponent.position);
+
+            if (distance < oponentDistanceOnRetreat)
+            {
+                Vector3 dirToOponent = transform.position - Oponent.position;
+
+                Vector3 newPos = transform.position + dirToOponent;
+
+                ThisAgent.SetDestination(newPos);
+            }
+        }
     }
 
     public IEnumerator StateChase()
@@ -135,8 +165,15 @@ public class FighterAI : MonoBehaviour
         while (CurrentState == AISTATE.ATTACKHIGH)
         {
             anim.SetBool("attackHigh", true);
-           
-                //Wait for animation to finish until applying stamina penalty
+
+            if (FHealthScript.HealthPoints <= 0)
+            {
+                //Debug.Log("END");
+                CurrentState = _CurrentState = AISTATE.DEFEAT;
+                break;
+            }
+
+            //Wait for animation to finish until applying stamina penalty
             yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length);
 
             FHealthScript.Stamina -= highAttackCost;
@@ -144,7 +181,7 @@ public class FighterAI : MonoBehaviour
             {
                 anim.SetBool("attackHigh", false);
                 //80% chance to block
-                if (Random.Range(0, reactionLevel) > blockChance)
+                if (Random.Range(0, reactionLevel) > nonBlockingChance)
                     CurrentState = _CurrentState = AISTATE.BLOCK;
                 else
                     CurrentState = _CurrentState = AISTATE.RETREAT;
@@ -163,11 +200,12 @@ public class FighterAI : MonoBehaviour
             yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length);
 
             FHealthScript.Stamina -= lowAttackCost;
+
             if (FHealthScript.Stamina < lowAttackCost || FHealthScript.Stamina <= Random.Range(0, fitnessLevel))
             {
                 anim.SetBool("attackLow", false);
-                    //80% chance to block
-                if (Random.Range(0, reactionLevel) > blockChance)
+                //80% chance to block
+                if (Random.Range(0, reactionLevel) > nonBlockingChance)
                     CurrentState = _CurrentState = AISTATE.BLOCK;
                 else
                     CurrentState = _CurrentState = AISTATE.RETREAT;
@@ -180,15 +218,13 @@ public class FighterAI : MonoBehaviour
     {
         while (CurrentState == AISTATE.BLOCK)
         {
-            StartCoroutine(FHealthScript.recoverStamina());
+            StartCoroutine(FHealthScript.Recover());
 
             ActionAfterRecovery();
 
             yield return null;
         }
     }
-
-   
 
     public IEnumerator StateDodgeHigh()
     {
@@ -216,8 +252,12 @@ public class FighterAI : MonoBehaviour
     {
         while (CurrentState == AISTATE.RETREAT)
         {
-            StartCoroutine(FHealthScript.recoverStamina());
+            anim.SetBool("move", true);
 
+            StartCoroutine(FHealthScript.Recover());
+
+            //Wait for animation to finish until applying stamina penalty
+            yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length);
             ActionAfterRecovery();
 
             yield return null;
@@ -231,5 +271,15 @@ public class FighterAI : MonoBehaviour
             CurrentState = _CurrentState = AISTATE.ATTACKHIGH;
         else if (FHealthScript.Stamina >= (lowAttackCost + Random.Range(0, fitnessLevel)))
             CurrentState = _CurrentState = AISTATE.ATTACKLOW;
+    }
+
+    public IEnumerator StateDefeat()
+    {
+        //Debug.Log("Defeat............");
+            anim.SetBool("Defeat", true);
+            anim.SetFloat("DefeatType", 0);
+            
+        ThisAgent.enabled = false;
+            yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length);
     }
 }
