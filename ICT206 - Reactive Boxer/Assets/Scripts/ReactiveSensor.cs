@@ -11,7 +11,11 @@ public class ReactiveSensor : MonoBehaviour
     public GameObject Oponent;
     private FighterHealth OponentHealthScript;
     private Animator OponentAnim;
+    public GameObject glove;
+    public GameObject torso;
 
+    Vector3 prevPos, currPos;
+    float prevDist = 0;
     // Start is called before the first frame update
     void Start()
     {
@@ -19,12 +23,23 @@ public class ReactiveSensor : MonoBehaviour
 
         OponentHealthScript = Oponent.GetComponent<FighterHealth>();
         OponentAnim = Oponent.GetComponent<Animator>();
-    }
 
+        prevPos = glove.transform.position;
+    }
     // Update is called once per frame
     void Update()
     {
-        
+        /*currPos = glove.transform.position;
+        float dist = Vector3.Distance(prevPos, currPos);
+
+        Debug.Log("dis: " + dist + "   prevDist: " + prevDist);
+        if (dist > prevDist)
+            Debug.Log("Left punch");
+        else
+            Debug.Log("Right punch");
+
+        prevDist = dist;
+        prevPos = glove.transform.position;*/
     }
 
     private void OnCollisionEnter(Collision collision)

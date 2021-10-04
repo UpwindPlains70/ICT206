@@ -66,6 +66,8 @@ public class FighterAI : MonoBehaviour
     private Transform ThisTransform = null;
     private float attackRange = 1.0f;
     public float oponentDistanceOnRetreat = 2.0f;
+        //Percentage that con be lost/used before requiring a change of action
+    public float maxResiliance = 0.40f;
 
     private FighterHealth FHealthScript;
     private Animator anim;
@@ -106,19 +108,18 @@ public class FighterAI : MonoBehaviour
     private void OnEnable()
     {
         CurrentState = AISTATE.CHASE;
-        //Debug.Log("enabled");
     }
     private void OnDisable()
     {
         StopAllCoroutines();
-        //Debug.Log("disabled");
     }
 
     public void FixedUpdate()
     {
         if (CurrentState != AISTATE.DEFEAT && CurrentState != AISTATE.VICTORY)
         {
-            LookAtOponent();
+            if(CurrentState == AISTATE.CHASE || Random.Range(0,2) == 1)
+                LookAtOponent();
 
             if (FHealthScript.HealthPoints <= 0 && CurrentState != AISTATE.DEFEAT)
             {
@@ -132,9 +133,8 @@ public class FighterAI : MonoBehaviour
                 EvadeOponent();
             }
 
-            //if(CurrentState != AISTATE.CHASE)
-              //  subtleMovement();
-            
+            if (CurrentState != AISTATE.CHASE && CurrentState != AISTATE.RETREAT && Random.Range(0, 4) == 1)
+                subtleMovement();
         }
     }
 
@@ -165,18 +165,21 @@ public class FighterAI : MonoBehaviour
 
     private void subtleMovement()
     {
+        float distance = Vector3.Distance(transform.position, Oponent.position);
         Vector3 dirToOponent = Vector3.zero;
 
-            if (Random.Range(0, 1) == 1)
+        if (distance <= attackRange)
+        {
+            anim.SetBool("move", true);
+            if (Random.Range(0, 2) == 1)
                 dirToOponent = transform.position + Oponent.position;
             else
                 dirToOponent = transform.position - Oponent.position;
-            
-            CurrentState = _CurrentState = AISTATE.CHASE;
 
             Vector3 newPos = transform.position + dirToOponent;
 
             ThisAgent.SetDestination(newPos);
+        }
     }
 
     public IEnumerator StateChase()
@@ -191,15 +194,13 @@ public class FighterAI : MonoBehaviour
             DistancetoDest <= attackRange)
             {
                     //Change state due to met condition (within range)
-                if(Random.Range(0,1) == 1)
+                if(Random.Range(0,2) == 1)
                     CurrentState = _CurrentState = AISTATE.ATTACKHIGH;
                 else
                     CurrentState = _CurrentState = AISTATE.ATTACKLOW;
 
                 yield break;
             }
-
-            //ThisAgent.SetDestination(Oponent.position);
             yield return null;
         }
     }
@@ -215,13 +216,24 @@ public class FighterAI : MonoBehaviour
             yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length);
 
             FHealthScript.Stamina -= highAttackCost;
-            if (FHealthScript.Stamina < highAttackCost || FHealthScript.Stamina <= Random.Range(0, fitnessLevel))
+            if (resilianceCheck() || FHealthScript.Stamina < highAttackCost || FHealthScript.Stamina <= Random.Range(0, fitnessLevel))
             {
                 anim.SetBool("attackHigh", false);
                 BlockOrRetreat();
             }
         yield return null;
         }
+    }
+
+    private bool resilianceCheck()
+    {
+        if (FHealthScript.Stamina <= FHealthScript.Stamina * Random.Range(0.1f, maxResiliance) ||
+            FHealthScript.HealthPoints <= FHealthScript.HealthPoints * Random.Range(0.1f, maxResiliance))
+        {
+            return true;
+        }
+
+        return false;
     }
 
     private void BlockOrRetreat()
@@ -246,7 +258,7 @@ public class FighterAI : MonoBehaviour
 
             FHealthScript.Stamina -= lowAttackCost;
 
-            if (FHealthScript.Stamina < lowAttackCost || FHealthScript.Stamina <= Random.Range(0, fitnessLevel))
+            if (resilianceCheck() || FHealthScript.Stamina < lowAttackCost || FHealthScript.Stamina <= Random.Range(0, fitnessLevel))
             {
                 anim.SetBool("attackLow", false);
                 BlockOrRetreat();
@@ -299,6 +311,7 @@ public class FighterAI : MonoBehaviour
 
     public IEnumerator StateRetreat()
     {
+        Debug.Log("Retreat");
         while (CurrentState == AISTATE.RETREAT)
         {
             anim.SetBool("move", true);
