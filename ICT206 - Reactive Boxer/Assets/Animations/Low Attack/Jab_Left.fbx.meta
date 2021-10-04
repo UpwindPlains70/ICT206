@@ -1,11 +1,11 @@
 fileFormatVersion: 2
-guid: 576a557151c879d45bec53c1987607ed
+guid: d4664e1d21a80024586947bea0c6c40b
 ModelImporter:
   serializedVersion: 19301
   internalIDToNameTable:
   - first:
       74: -203655887218126122
-    second: Right_Jab
+    second: Left_Jab
   externalObjects: {}
   materials:
     materialImportMode: 1
@@ -35,11 +35,11 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Right_Jab
+      name: Left_Jab
       takeName: mixamo.com
       internalID: 0
       firstFrame: 0
-      lastFrame: 57
+      lastFrame: 52
       wrapMode: 0
       orientationOffsetY: 0
       level: 0

@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 86923417d252a3842bc143daeaa74e10
+guid: 53a8994038d013b47b7bf61517a48437
 ModelImporter:
   serializedVersion: 19301
   internalIDToNameTable:
@@ -51,11 +51,11 @@ ModelImporter:
       loopBlendOrientation: 1
       loopBlendPositionY: 1
       loopBlendPositionXZ: 0
-      keepOriginalOrientation: 0
+      keepOriginalOrientation: 1
       keepOriginalPositionY: 0
       keepOriginalPositionXZ: 0
       heightFromFeet: 1
-      mirror: 0
+      mirror: 1
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
       events: []
