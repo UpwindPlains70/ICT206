@@ -14,6 +14,7 @@ public class FighterHealth : MonoBehaviour
     [SerializeField]
     private float _HealthPoints = 100f;
     private float _MaxHealthDefault;
+        //Could be an editable value
     private float healthRecoveryChance = 4;
 
     [SerializeField]
@@ -27,20 +28,21 @@ public class FighterHealth : MonoBehaviour
     public float lowAttackCost = 5;
 
     //Max stamina to remain before stopping attack
-    public int fitnessLevel = 50;
+    //public int fitnessLevel = 50;
     //used to determine block or retreat on low stamina
-    public int reactionLevel = 50;
+    //public int reactionLevel = 50;
     //chance to block (linked to reationLevel)
-    public int nonBlockingChance = 20;
+    //public int nonBlockingChance = 20;
 
     //rate of which stamina is recovered (in seconds)
-    public int recoveryRate = 2;
-    //Amount stamina is recovered
-    public int staminaRecovery = 10;
-    //Amount health is recovered
-    public int healthRecovery = 5;
+    //public int recoveryRate = 2;
+    //public int staminaRecovery = 10;
 
-    private void OnValidate()
+    //public int healthRecovery = 5;
+
+    //public float maxResilience = 0.40f;
+
+   /* private void OnValidate()
     {
             //Min Max health information
         _HealthPoints = Mathf.Clamp(_HealthPoints, 10, 1000);
@@ -49,7 +51,7 @@ public class FighterHealth : MonoBehaviour
         
             //Min Max stamina information
         _MaxStamina = Mathf.Clamp(_MaxStamina, 50, 1000);
-        recoveryRate = Mathf.Clamp(recoveryRate, 50, 1000);
+        recoveryRate = Mathf.Clamp(recoveryRate, 1, 10);
         staminaRecovery = Mathf.Clamp(staminaRecovery, 50, 1000);
 
             //Min Max strength information
@@ -59,6 +61,30 @@ public class FighterHealth : MonoBehaviour
         reactionLevel = Mathf.Clamp(reactionLevel, 0, 100);
         fitnessLevel = Mathf.Clamp(fitnessLevel, 0, 100);
 
+    }*/
+
+    //Amount health is recovered
+    public int HealthRecovery { get; set; }
+
+    //Amount stamina is recovered
+    public int StaminaRecovery { get; set; }
+
+    //rate of which stamina is recovered (in seconds)
+    public int RecoveryRate { get; set; }
+
+    //chance to block (linked to reationLevel)
+    public int BlockChance { get; set; }
+
+    //used to determine block or retreat on low stamina
+    public int ReactionLevel { get; set; }
+    
+    //Max stamina to remain before stopping attack
+    public int FitnessLevel { get; set; }
+
+    //Percentage that con be lost/used before requiring a change of action
+    public float Resilience
+    {
+        get; set;
     }
 
     //Only recoveres when fighter is retreating (maybe blocking)
@@ -104,21 +130,31 @@ public class FighterHealth : MonoBehaviour
             _MaxStrength = value;
         }
     }
+
     private void Start()
     {
+        Resilience = 0.4f;
+        FitnessLevel = 50;
+        ReactionLevel = 50;
+        BlockChance = 50;
+
+        RecoveryRate = 2;
+        StaminaRecovery = 10;
+        HealthRecovery = 5;
+        
         _MaxStaminaDefault = _MaxStamina;
         _MaxHealthDefault = _HealthPoints;
     }
 
     public IEnumerator Recover()
     {
-        Stamina += staminaRecovery;
+        Stamina += StaminaRecovery;
 
         //chance to recover health
         if (Random.Range(1, healthRecoveryChance) == 1)
-            HealthPoints += healthRecovery;
+            HealthPoints += HealthRecovery;
 
-        yield return new WaitForSeconds(recoveryRate);
+        yield return new WaitForSeconds(RecoveryRate);
     }
 
 

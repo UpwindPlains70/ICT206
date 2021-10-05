@@ -66,17 +66,14 @@ public class FighterAI : MonoBehaviour
     private Transform ThisTransform = null;
     private float attackRange = 1.0f;
     public float oponentDistanceOnRetreat = 2.0f;
-        //Percentage that con be lost/used before requiring a change of action
-    public float maxResiliance = 0.40f;
 
     private FighterHealth FHealthScript;
     private Animator anim;
 
-    private float highAttackCost = 15;
-    private float lowAttackCost = 5;
 
     //Stores local refences to Fighter health values
-    private int fitnessLevel, reactionLevel, nonBlockingChance;
+    private int fitnessLevel, reactionLevel, blockingChance;
+    private float maxResilience, highAttackCost, lowAttackCost;
 
     private void OnValidate()
     {
@@ -96,9 +93,12 @@ public class FighterAI : MonoBehaviour
         //GetComponent<Transform>();
         ThisTransform = GetComponent<Transform>();
 
-        fitnessLevel = FHealthScript.fitnessLevel;
-        reactionLevel = FHealthScript.reactionLevel;
-        nonBlockingChance = FHealthScript.nonBlockingChance;
+        fitnessLevel = FHealthScript.FitnessLevel;
+        reactionLevel = FHealthScript.ReactionLevel;
+        blockingChance = FHealthScript.BlockChance;
+        highAttackCost = FHealthScript.highAttackCost;
+        lowAttackCost = FHealthScript.lowAttackCost;
+        maxResilience = FHealthScript.Resilience;
     }
 
     private void Start()
@@ -227,8 +227,8 @@ public class FighterAI : MonoBehaviour
 
     private bool resilianceCheck()
     {
-        if (FHealthScript.Stamina <= FHealthScript.Stamina * Random.Range(0.1f, maxResiliance) ||
-            FHealthScript.HealthPoints <= FHealthScript.HealthPoints * Random.Range(0.1f, maxResiliance))
+        if (FHealthScript.Stamina <= FHealthScript.Stamina * Random.Range(0.1f, maxResilience) ||
+            FHealthScript.HealthPoints <= FHealthScript.HealthPoints * Random.Range(0.1f, maxResilience))
         {
             return true;
         }
@@ -239,7 +239,7 @@ public class FighterAI : MonoBehaviour
     private void BlockOrRetreat()
     {
         //chance to block
-        if (Random.Range(0, reactionLevel) > nonBlockingChance)
+        if (Random.Range(0, reactionLevel) < blockingChance)
             CurrentState = _CurrentState = AISTATE.BLOCK;
         else
             CurrentState = _CurrentState = AISTATE.RETREAT;
