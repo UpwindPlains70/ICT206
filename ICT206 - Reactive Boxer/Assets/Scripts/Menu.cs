@@ -30,4 +30,9 @@ public class Menu : MonoBehaviour
     {
         Application.Quit();
     }
+
+    public void SetTimeScale(float newValue)
+    {
+        Time.timeScale = newValue;
+    }
 }

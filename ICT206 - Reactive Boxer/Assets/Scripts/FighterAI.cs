@@ -187,11 +187,7 @@ public class FighterAI : MonoBehaviour
         while (CurrentState == AISTATE.CHASE)
         {
             //Check distance
-            float DistancetoDest = Vector3.Distance(ThisTransform.position,
-            Oponent.position);
-
-            if (Mathf.Approximately(DistancetoDest, ThisAgent.stoppingDistance) ||
-            DistancetoDest <= attackRange)
+            if(checkDistance())
             {
                     //Change state due to met condition (within range)
                 if(Random.Range(0,2) == 1)
@@ -216,7 +212,7 @@ public class FighterAI : MonoBehaviour
             yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length);
 
             FHealthScript.Stamina -= highAttackCost;
-            if (resilianceCheck() || FHealthScript.Stamina < highAttackCost || FHealthScript.Stamina <= Random.Range(0, fitnessLevel))
+            if (ResilienceCheck() || FHealthScript.Stamina < highAttackCost || FHealthScript.Stamina <= Random.Range(0, fitnessLevel))
             {
                 anim.SetBool("attackHigh", false);
                 BlockOrRetreat();
@@ -225,7 +221,7 @@ public class FighterAI : MonoBehaviour
         }
     }
 
-    private bool resilianceCheck()
+    private bool ResilienceCheck()
     {
         if (FHealthScript.Stamina <= FHealthScript.Stamina * Random.Range(0.1f, maxResilience) ||
             FHealthScript.HealthPoints <= FHealthScript.HealthPoints * Random.Range(0.1f, maxResilience))
@@ -258,7 +254,7 @@ public class FighterAI : MonoBehaviour
 
             FHealthScript.Stamina -= lowAttackCost;
 
-            if (resilianceCheck() || FHealthScript.Stamina < lowAttackCost || FHealthScript.Stamina <= Random.Range(0, fitnessLevel))
+            if (ResilienceCheck() || FHealthScript.Stamina < lowAttackCost || FHealthScript.Stamina <= Random.Range(0, fitnessLevel))
             {
                 anim.SetBool("attackLow", false);
                 BlockOrRetreat();
@@ -311,7 +307,6 @@ public class FighterAI : MonoBehaviour
 
     public IEnumerator StateRetreat()
     {
-        Debug.Log("Retreat");
         while (CurrentState == AISTATE.RETREAT)
         {
             anim.SetBool("move", true);
@@ -326,13 +321,28 @@ public class FighterAI : MonoBehaviour
         }
     }
 
+    //returns true of distance is within range
+    private bool checkDistance()
+    {
+        float DistancetoDest = Vector3.Distance(ThisTransform.position,
+        Oponent.position);
+
+        if (Mathf.Approximately(DistancetoDest, ThisAgent.stoppingDistance) ||
+            DistancetoDest <= attackRange)
+            return true;
+
+        return false;
+    }
     private void ActionAfterRecovery()
     {
         //Use random range to prevent AI from attacking with minimal stamina
         //UPDATE: add distance to gloves check
-        if (FHealthScript.Stamina >= (highAttackCost + Random.Range(0, fitnessLevel)))
+        //Check distance
+        if(checkDistance())
+            CurrentState = _CurrentState = AISTATE.CHASE;
+        else if (ResilienceCheck() || FHealthScript.Stamina >= (highAttackCost + Random.Range(0, fitnessLevel)))
             CurrentState = _CurrentState = AISTATE.ATTACKHIGH;
-        else if (FHealthScript.Stamina >= (lowAttackCost + Random.Range(0, fitnessLevel)))
+        else if (ResilienceCheck() || FHealthScript.Stamina >= (lowAttackCost + Random.Range(0, fitnessLevel)))
             CurrentState = _CurrentState = AISTATE.ATTACKLOW;
     }
 
