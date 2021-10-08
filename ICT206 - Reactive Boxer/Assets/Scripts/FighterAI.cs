@@ -9,7 +9,7 @@ using UnityEngine.AI;
 [RequireComponent(typeof(FighterHealth))]
 public class FighterAI : MonoBehaviour
 {
-    public enum AISTATE { CHASE = 0, ATTACKLOW = 1, ATTACKHIGH = 2, BLOCK = 3, DODGEHIGH = 4, DODGELOW = 5, RETREAT = 6, DEFEAT = 7, VICTORY = 8};
+    public enum AISTATE { CHASE = 0, ATTACKLOW = 1, ATTACKHIGH = 2, BLOCK = 3, DODGE = 4, RETREAT = 5, DEFEAT = 6, VICTORY = 7};
     public AISTATE CurrentState
     {
         get { return _CurrentState; }
@@ -31,11 +31,8 @@ public class FighterAI : MonoBehaviour
                 case AISTATE.BLOCK:
                     StartCoroutine(StateBlock());
                     break;
-                case AISTATE.DODGEHIGH:
-                    StartCoroutine(StateDodgeHigh());
-                    break;
-                case AISTATE.DODGELOW:
-                    StartCoroutine(StateDodgeLow());
+                case AISTATE.DODGE:
+                    StartCoroutine(StateDodge());
                     break;
                 case AISTATE.RETREAT:
                     StartCoroutine(StateRetreat());
@@ -69,26 +66,20 @@ public class FighterAI : MonoBehaviour
 
     private FighterHealth FHealthScript;
     private Animator anim;
-
+    private ReactiveSensor myRSensor;
 
     //Stores local refences to Fighter health values
     private int fitnessLevel, reactionLevel, blockingChance;
     private float maxResilience, highAttackCost, lowAttackCost;
 
-    private void OnValidate()
-    {
-            //Restrict customization values
-        //highAttackCost = Mathf.Clamp(highAttackCost, 5, FHealthScript.Stamina);
-        //lowAttackCost = Mathf.Clamp(lowAttackCost, 2, FHealthScript.Stamina);
-    }
-
-    private void Awake()
+    private void Start()
     {
             //store reference to health/stamina so effects can be applied
         FHealthScript = GetComponent<FighterHealth>();
             //Store animator
         anim = GetComponent<Animator>();
         ThisAgent = GetComponent<NavMeshAgent>();
+        myRSensor = GetComponent<ReactiveSensor>();
 
         //GetComponent<Transform>();
         ThisTransform = GetComponent<Transform>();
@@ -99,16 +90,14 @@ public class FighterAI : MonoBehaviour
         highAttackCost = FHealthScript.highAttackCost;
         lowAttackCost = FHealthScript.lowAttackCost;
         maxResilience = FHealthScript.Resilience;
-    }
-
-    private void Start()
-    {
         CurrentState = _CurrentState;
     }
+
     private void OnEnable()
     {
         CurrentState = AISTATE.CHASE;
     }
+
     private void OnDisable()
     {
         StopAllCoroutines();
@@ -118,6 +107,12 @@ public class FighterAI : MonoBehaviour
     {
         if (CurrentState != AISTATE.DEFEAT && CurrentState != AISTATE.VICTORY)
         {
+            if (!checkDistance() && CurrentState != AISTATE.CHASE)
+                CurrentState = _CurrentState = AISTATE.CHASE;
+
+            if (CurrentState != AISTATE.CHASE && CurrentState != AISTATE.RETREAT && CurrentState != AISTATE.DODGE && Random.Range(0, 100) < reactionLevel)
+                CurrentState = _CurrentState = AISTATE.DODGE;
+
             if(CurrentState == AISTATE.CHASE || Random.Range(0,2) == 1)
                 LookAtOponent();
 
@@ -268,11 +263,14 @@ public class FighterAI : MonoBehaviour
         while (CurrentState == AISTATE.BLOCK)
         {
             //Check punch direction
-            //0 = left
-            anim.SetFloat("BlockType", 0.5f); //centre
-            //1 = right
+            if(myRSensor.leftHit)
+                anim.SetFloat("BlockType", 1); //Left
+            else if(myRSensor.centreHit)
+                anim.SetFloat("BlockType", 0.5f); //centre
+            else if(myRSensor.rightHit)
+                anim.SetFloat("BlockType", 0); //Right
 
-            anim.SetBool("Block", true);
+            anim.SetBool("block", true);
 
             StartCoroutine(FHealthScript.Recover());
 
@@ -282,26 +280,25 @@ public class FighterAI : MonoBehaviour
         }
     }
 
-    public IEnumerator StateDodgeHigh()
+    public IEnumerator StateDodge()
     {
-        while (CurrentState == AISTATE.DODGEHIGH)
+        while (CurrentState == AISTATE.DODGE)
         {
-            Vector3 Dir = (Oponent.position - ThisTransform.position).
-            normalized;
-            Dir.y = 0;
-            ThisTransform.rotation = Quaternion.LookRotation(Dir, Vector3.up);
-            yield return null;
-        }
-    }
-    public IEnumerator StateDodgeLow()
-    {
-        while (CurrentState == AISTATE.DODGELOW)
-        {
-            Vector3 Dir = (Oponent.position - ThisTransform.position).
-            normalized;
-            Dir.y = 0;
-            ThisTransform.rotation = Quaternion.LookRotation(Dir, Vector3.up);
-            yield return null;
+            Debug.Log("Didging");
+            //anim.StopPlayback();
+            //Check punch direction
+            if (myRSensor.leftHit)
+                anim.SetFloat("DodgeType", 1); //Left
+            else if (myRSensor.centreHit)
+                anim.SetFloat("DodgeType", 0.5f); //centre
+            else if (myRSensor.rightHit)
+                anim.SetFloat("DodgeType", 0); //Right
+
+            anim.SetBool("dodge", true);
+
+            yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length);
+            
+            ActionAfterRecovery();
         }
     }
 
@@ -348,10 +345,17 @@ public class FighterAI : MonoBehaviour
 
     public IEnumerator StateDefeat()
     {
-        anim.StopPlayback();
+        anim.StopPlayback();//Check punch direction
+        if (myRSensor.leftHit)
+            anim.SetFloat("DefeatType", 1); //Left
+        else if (myRSensor.centreHit)
+            anim.SetFloat("DefeatType", 0.5f); //centre
+        else if (myRSensor.rightHit)
+            anim.SetFloat("DefeatType", 0); //Right
+
         anim.SetBool("Defeat", true);
-        anim.SetFloat("DefeatType", 0);
-            
+            //Turn 'off' movement layer
+        anim.SetLayerWeight(1, 0);
         ThisAgent.enabled = false;
             yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length);
     }
@@ -360,9 +364,10 @@ public class FighterAI : MonoBehaviour
     {
         anim.StopPlayback();
         anim.SetBool("Victory", true);
+            //Turn 'off' movement layer
+        anim.SetLayerWeight(1, 0);
 
         ThisAgent.enabled = false;
-
 
         yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length);
     }

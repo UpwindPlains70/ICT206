@@ -131,7 +131,7 @@ public class FighterHealth : MonoBehaviour
         }
     }
 
-    private void Start()
+    private void Awake()
     {
         Resilience = 0.4f;
         FitnessLevel = 50;

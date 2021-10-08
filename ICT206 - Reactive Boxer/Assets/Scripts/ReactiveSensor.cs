@@ -16,9 +16,11 @@ public class ReactiveSensor : MonoBehaviour
     public GameObject rightGlove;
     public GameObject torso;
 
-    bool rightHit, leftHit, centreHit = false;
+    public bool rightHit {get; private set; }
+    public bool leftHit { get; private set; }
+    public bool centreHit { get; private set; }
 
-    bool hitHigh, hitLow = false;
+    bool hitHighRunning, hitLowRunning = false;
     
     // Start is called before the first frame update
     void Start()
@@ -33,44 +35,36 @@ public class ReactiveSensor : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Vector3 delta = (rightGlove.transform.position - transform.position).normalized;
-        Vector3 cross = Vector3.Cross(delta, rightGlove.transform.forward);
+        Vector3 deltaR = (rightGlove.transform.position - transform.position).normalized;
+        Vector3 crossR = Vector3.Cross(deltaR, rightGlove.transform.forward);
+        
+        Vector3 deltaL = (leftGlove.transform.position - transform.position).normalized;
+        Vector3 crossL = Vector3.Cross(deltaL, leftGlove.transform.forward);
 
-        if (cross.y > -0.2f && cross.y < 0.2f)
+        if (crossR.y > -0.2f && crossR.y < 0.2f)
         {
             // Target is straight ahead
-            Debug.Log("centre");
+            //Debug.Log("centre");
             centreHit = true;
             rightHit = false;
             leftHit = false;
         }
-        else if (cross.y > 0.2f)
+        else if (crossR.y > 0.2f)
         {
             // Target is to the right
-            Debug.Log("Right");
+            //Debug.Log("Right");
             centreHit = false;
             rightHit = true;
             leftHit = false;
         }
-        else
+        else if(crossR.y < -0.2f)
         {
             // Target is to the left
-            Debug.Log("Left");
+            //Debug.Log("Left");
             centreHit = false;
             rightHit = false;
             leftHit = true;
         }
-        /*float leftDir = Vector3.Dot(torso.transform.position, leftGlove.transform.right);
-        float rightDir = Vector3.Dot(torso.transform.position, rightGlove.transform.right);
-        
-        Debug.Log(rightDir);
-
-        if (rightDir > 0.2f)
-            Debug.Log("Right");
-        else if (leftDir < -0.4f && leftDir > -0.8f)
-            Debug.Log("Left");
-        else
-            Debug.Log("Centre");*/
     }
 
     //Source: https://docs.unity3d.com/ScriptReference/AI.NavMesh.FindClosestEdge.html
@@ -88,28 +82,28 @@ public class ReactiveSensor : MonoBehaviour
     {
         if (!collision.transform.IsChildOf(transform))
         {   
-            if (collision.contacts[0].thisCollider.CompareTag("Head") && !hitLow)
+            if (collision.contacts[0].thisCollider.CompareTag("Head") && !hitLowRunning)
                 highHit();
-            else if (collision.contacts[0].thisCollider.CompareTag("Torso") && !hitHigh)
+            else if (collision.contacts[0].thisCollider.CompareTag("Torso") && !hitHighRunning)
                 lowHit();
 
             if (OponentHealthScript.HealthPoints > 0)
                 OponentAnim.Play("Boxing_Idle");
         }
-        hitHigh = hitLow = false;
     }
 
     private void highHit()
     {
-        hitHigh = true;
-        MyHealthScript.HealthPoints -= 10 * OponentHealthScript.Strength;
-        //StopAllCoroutines();
+        if (!hitHighRunning && !hitLowRunning)
+            MyHealthScript.HealthPoints -= 10 * OponentHealthScript.Strength;
+
         if(MyHealthScript.HealthPoints > 0)
             StartCoroutine(HighHit());
     }
 
     private IEnumerator HighHit()
     {
+        hitHighRunning = true;
         myAnim.StopPlayback();
         if (rightHit)
         {
@@ -128,13 +122,14 @@ public class ReactiveSensor : MonoBehaviour
         }
 
         yield return new WaitForSeconds(myAnim.GetCurrentAnimatorStateInfo(0).length);
+
+        hitHighRunning = false;
     }
 
     private void lowHit()
     {
-        hitLow = true;
-        MyHealthScript.HealthPoints -= 2 * OponentHealthScript.Strength;
-        //StopAllCoroutines();
+        if(!hitHighRunning && !hitLowRunning)
+            MyHealthScript.HealthPoints -= 2 * OponentHealthScript.Strength;
 
         if (MyHealthScript.HealthPoints > 0)
             StartCoroutine(LowHit());
@@ -142,6 +137,7 @@ public class ReactiveSensor : MonoBehaviour
 
     private IEnumerator LowHit()
     {
+        hitLowRunning = true;
         myAnim.StopPlayback();
         if (rightHit)
         {
@@ -160,5 +156,6 @@ public class ReactiveSensor : MonoBehaviour
         }
 
         yield return new WaitForSeconds(myAnim.GetCurrentAnimatorStateInfo(0).length);
+        hitLowRunning = false;
     }
 }
