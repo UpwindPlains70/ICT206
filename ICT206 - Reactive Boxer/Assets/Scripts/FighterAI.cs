@@ -72,6 +72,8 @@ public class FighterAI : MonoBehaviour
     private int fitnessLevel, reactionLevel, blockingChance;
     private float maxResilience, highAttackCost, lowAttackCost;
 
+    public GameObject victory;
+
     private void Start()
     {
             //store reference to health/stamina so effects can be applied
@@ -110,8 +112,8 @@ public class FighterAI : MonoBehaviour
             if (!checkDistance() && CurrentState != AISTATE.CHASE)
                 CurrentState = _CurrentState = AISTATE.CHASE;
 
-            if (CurrentState != AISTATE.CHASE && CurrentState != AISTATE.RETREAT && CurrentState != AISTATE.DODGE && Random.Range(0, 100) < reactionLevel)
-                CurrentState = _CurrentState = AISTATE.DODGE;
+            //if (CurrentState != AISTATE.CHASE && CurrentState != AISTATE.RETREAT && CurrentState != AISTATE.DODGE && Random.Range(0, 100) < reactionLevel)
+            //    CurrentState = _CurrentState = AISTATE.DODGE;
 
             if(CurrentState == AISTATE.CHASE || Random.Range(0,2) == 1)
                 LookAtOponent();
@@ -297,7 +299,7 @@ public class FighterAI : MonoBehaviour
             anim.SetBool("dodge", true);
 
             yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length);
-            
+            anim.SetBool("dodge", false);
             ActionAfterRecovery();
         }
     }
@@ -353,9 +355,9 @@ public class FighterAI : MonoBehaviour
         else if (myRSensor.rightHit)
             anim.SetFloat("DefeatType", 0); //Right
 
-        anim.SetBool("Defeat", true);
-            //Turn 'off' movement layer
-        anim.SetLayerWeight(1, 0);
+        anim.Play("Defeat");
+        //anim.SetBool("Defeat", true);
+        
         ThisAgent.enabled = false;
             yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length);
     }
@@ -363,9 +365,9 @@ public class FighterAI : MonoBehaviour
     public IEnumerator StateVictory()
     {
         anim.StopPlayback();
-        anim.SetBool("Victory", true);
-            //Turn 'off' movement layer
-        anim.SetLayerWeight(1, 0);
+        victory.SetActive(true);
+        anim.Play("Victory");
+        //anim.SetBool("Victory", true);
 
         ThisAgent.enabled = false;
 
