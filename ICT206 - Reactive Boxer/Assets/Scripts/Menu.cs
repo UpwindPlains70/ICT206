@@ -59,6 +59,7 @@ public class Menu : MonoBehaviour
             setFinalTime();
             HUD.SetActive(false);
             gameOverUI.SetActive(true);
+            Debug.Log("GameOver");
         }
     }
 

@@ -15,7 +15,7 @@ public class FighterHealth : MonoBehaviour
     private float _HealthPoints = 100f;
     private float _MaxHealthDefault;
         //Could be an editable value
-    private int healthRecoveryChance = 3;
+    private int healthRecoveryChance = 4;
 
     [SerializeField]
     private float _MaxStamina = 100f;
