@@ -16,6 +16,8 @@ public class ReactiveSensor : MonoBehaviour
     public GameObject rightGlove;
     public GameObject torso;
 
+    private AudioSource hitSound;
+
     public bool rightHit {get; private set; }
     public bool leftHit { get; private set; }
     public bool centreHit { get; private set; }
@@ -27,6 +29,7 @@ public class ReactiveSensor : MonoBehaviour
     {
         MyHealthScript = GetComponent<FighterHealth>();
         myAnim = GetComponent<Animator>();
+        hitSound = GetComponent<AudioSource>();
 
         OponentHealthScript = Oponent.GetComponent<FighterHealth>();
         OponentAnim = Oponent.GetComponent<Animator>();
@@ -67,17 +70,6 @@ public class ReactiveSensor : MonoBehaviour
         }
     }
 
-    //Source: https://docs.unity3d.com/ScriptReference/AI.NavMesh.FindClosestEdge.html
-    void nearestRope()
-    {
-        NavMeshHit hit;
-        if (NavMesh.FindClosestEdge(transform.position, out hit, NavMesh.AllAreas))
-        {
-            //DrawCircle(transform.position, hit.distance, Color.red);
-            Debug.DrawRay(hit.position, Vector3.up, Color.red);
-        }
-    }
-
     private void OnCollisionEnter(Collision collision)
     {
         if (!collision.transform.IsChildOf(transform))
@@ -94,8 +86,11 @@ public class ReactiveSensor : MonoBehaviour
 
     private void highHit()
     {
+            hitSound.Play();
         if (!hitHighRunning && !hitLowRunning)
+        {
             MyHealthScript.HealthPoints -= 10 * OponentHealthScript.Strength;
+        }
 
         if(MyHealthScript.HealthPoints > 0)
             StartCoroutine(HighHit());
@@ -128,9 +123,11 @@ public class ReactiveSensor : MonoBehaviour
 
     private void lowHit()
     {
-        if(!hitHighRunning && !hitLowRunning)
+        hitSound.Play();
+        if (!hitHighRunning && !hitLowRunning)
+        {
             MyHealthScript.HealthPoints -= 2 * OponentHealthScript.Strength;
-
+        }
         if (MyHealthScript.HealthPoints > 0)
             StartCoroutine(LowHit());
     }

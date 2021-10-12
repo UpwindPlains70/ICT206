@@ -15,7 +15,7 @@ public class FighterHealth : MonoBehaviour
     private float _HealthPoints = 100f;
     private float _MaxHealthDefault;
         //Could be an editable value
-    private float healthRecoveryChance = 4;
+    private int healthRecoveryChance = 3;
 
     [SerializeField]
     private float _MaxStamina = 100f;
@@ -112,20 +112,20 @@ public class FighterHealth : MonoBehaviour
 
     public IEnumerator Recover()
     {
-        Stamina += StaminaRecovery;
+        while (Stamina <= Random.Range(Stamina, _MaxStaminaDefault * Resilience) || HealthPoints <= Random.Range(HealthPoints, _MaxHealthDefault * Resilience))
+        {
+            Stamina += StaminaRecovery;
 
-        //chance to recover health
-        if (Random.Range(1, healthRecoveryChance) == 1)
-            HealthPoints += HealthRecovery;
+            //chance to recover health
+            if (Random.Range(0, healthRecoveryChance) == 1)
+                HealthPoints += HealthRecovery;
 
-        yield return new WaitForSeconds(RecoveryRate);
+            yield return new WaitForSeconds(RecoveryRate);
+        }
     }
-
 
     void Update()
     {
-        HealthCheck();
-        StaminaCheck();
     }
 
     void HealthCheck()

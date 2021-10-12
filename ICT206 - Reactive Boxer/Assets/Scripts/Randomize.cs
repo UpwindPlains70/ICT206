@@ -1,7 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class Randomize : MonoBehaviour
 {
@@ -15,6 +17,7 @@ public class Randomize : MonoBehaviour
     public Slider HealthRecovery;
     public Slider FitnessLevel;
     public Slider Resilience;
+    public Toggle environmentSensor;
 
     public FighterHealth fighter;
 
@@ -32,6 +35,7 @@ public class Randomize : MonoBehaviour
         HealthRecovery.value = Random.Range(HealthRecovery.minValue, HealthRecovery.maxValue);
         FitnessLevel.value = Random.Range(FitnessLevel.minValue, FitnessLevel.maxValue);
         Resilience.value = Random.Range(Resilience.minValue, Resilience.maxValue);
+        environmentSensor.isOn = Convert.ToBoolean(Random.Range(0, 2)); 
     }
 
     public void Copy_A_to_B()
@@ -46,5 +50,6 @@ public class Randomize : MonoBehaviour
         HealthRecovery.value = otherRandomizer.HealthRecovery.value;
         FitnessLevel.value = otherRandomizer.FitnessLevel.value;
         Resilience.value = otherRandomizer.Resilience.value;
+        environmentSensor.isOn = otherRandomizer.environmentSensor.isOn;
     }
 }
