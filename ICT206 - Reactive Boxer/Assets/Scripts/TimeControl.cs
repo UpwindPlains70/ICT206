@@ -29,4 +29,9 @@ public class TimeControl : MonoBehaviour
     {
         return time;
     }
+
+    public void ResetTime()
+    {
+        time = 0;
+    }
 }

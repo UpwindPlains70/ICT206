@@ -73,9 +73,11 @@ public class FighterAI : MonoBehaviour
     private float maxResilience, highAttackCost, lowAttackCost;
 
     public GameObject victory;
+    private Vector3 initialPos;
 
     private void Start()
     {
+        initialPos = GetComponent<Transform>().position;
             //store reference to health/stamina so effects can be applied
         FHealthScript = GetComponent<FighterHealth>();
             //Store animator
@@ -276,9 +278,10 @@ public class FighterAI : MonoBehaviour
 
             StartCoroutine(FHealthScript.Recover());
 
-            ActionAfterRecovery();
+            yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length);
 
-            yield return null;
+            ActionAfterRecovery();
+            anim.SetBool("block", false);
         }
     }
 
@@ -372,5 +375,20 @@ public class FighterAI : MonoBehaviour
         ThisAgent.enabled = false;
 
         yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length);
+    }
+
+    public void ResetAI()
+    {
+        anim.SetBool("Defeat", false);
+        anim.SetBool("Victory", false);
+        anim.SetBool("block", false);
+        anim.SetBool("dodge", false);
+        anim.SetBool("attackHigh", false);
+        anim.SetBool("attackLow", false);
+
+        anim.Play("Boxing_Idle");
+        this.transform.position = initialPos;
+
+        CurrentState = _CurrentState = AISTATE.CHASE;
     }
 }

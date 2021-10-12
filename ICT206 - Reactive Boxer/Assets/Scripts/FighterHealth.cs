@@ -185,5 +185,21 @@ public class FighterHealth : MonoBehaviour
             Stamina += newStam;
     }
 
+    public float getMaxStamina()
+    {
+        return _MaxStaminaDefault;
+    }
+
+    public float getMaxHealth()
+    {
+        return _MaxHealthDefault;
+    }
+
+    public void ResetStats()
+    {
+        HealthPoints = _MaxHealthDefault;
+        Stamina = _MaxStaminaDefault;
+    }
+
 }
 

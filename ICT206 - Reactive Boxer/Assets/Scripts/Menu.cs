@@ -6,7 +6,14 @@ using TMPro;
 
 public class Menu : MonoBehaviour
 {
-    public FighterAI fighterA;
+    private FighterAI fighterA_AI;
+    private FighterHealth fighterA_Stats;
+    public GameObject fighterA;
+
+    private FighterAI fighterB_AI;
+    private FighterHealth fighterB_Stats;
+    public GameObject fighterB;
+
     public GameObject gameOverUI;
     public GameObject HUD;
     public TextMeshProUGUI finalTime;
@@ -15,13 +22,17 @@ public class Menu : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        fighterA_AI = fighterA.GetComponent<FighterAI>();
+        fighterA_Stats = fighterA.GetComponent<FighterHealth>();
         
+        fighterB_AI = fighterB.GetComponent<FighterAI>();
+        fighterB_Stats = fighterB.GetComponent<FighterHealth>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (fighterA != null && (fighterA.CurrentState == FighterAI.AISTATE.VICTORY || fighterA.CurrentState == FighterAI.AISTATE.DEFEAT))
+        if (fighterA_AI != null && (fighterA_AI.CurrentState == FighterAI.AISTATE.VICTORY || fighterA_AI.CurrentState == FighterAI.AISTATE.DEFEAT))
         {
             setFinalTime();
             HUD.SetActive(false);
@@ -62,6 +73,12 @@ public class Menu : MonoBehaviour
 
     public void Restart()
     {
-        SceneManager.LoadScene(0);
+        fighterA_AI.ResetAI();
+        fighterA_Stats.ResetStats();
+
+        fighterB_AI.ResetAI();
+        fighterB_Stats.ResetStats();
+
+        timeController.ResetTime();
     }
 }
