@@ -28,19 +28,19 @@ public class FighterHealth : MonoBehaviour
     public float lowAttackCost = 5;
 
     //Amount health is recovered
-    public int HealthRecovery { get; set; }
+    public float HealthRecovery { get; set; }
 
     //Amount stamina is recovered
-    public int StaminaRecovery { get; set; }
+    public float StaminaRecovery { get; set; }
 
     //rate of which stamina is recovered (in seconds)
-    public int RecoveryRate { get; set; }
+    public float RecoveryRate { get; set; }
 
     //chance to block
-    public int BlockChance { get; set; }
+    public float BlockChance { get; set; }
     
     //Max stamina to remain before stopping attack
-    public int FitnessLevel { get; set; }
+    public float FitnessLevel { get; set; }
 
     //Percentage that can be lost/used before requiring a change of action
     public float Resilience

@@ -18,6 +18,9 @@ public class ReactiveSensor : MonoBehaviour
 
     private AudioSource hitSound;
 
+    private int highHitDamage = 10;
+    private int lowHitDamage = 4;
+
     public bool rightHit {get; private set; }
     public bool leftHit { get; private set; }
     public bool centreHit { get; private set; }
@@ -89,7 +92,7 @@ public class ReactiveSensor : MonoBehaviour
             hitSound.Play();
         if (!hitHighRunning && !hitLowRunning)
         {
-            MyHealthScript.HealthPoints -= 10 * OponentHealthScript.Strength;
+            MyHealthScript.HealthPoints -= highHitDamage * OponentHealthScript.Strength;
         }
 
         if(MyHealthScript.HealthPoints > 0)
@@ -126,7 +129,7 @@ public class ReactiveSensor : MonoBehaviour
         hitSound.Play();
         if (!hitHighRunning && !hitLowRunning)
         {
-            MyHealthScript.HealthPoints -= 2 * OponentHealthScript.Strength;
+            MyHealthScript.HealthPoints -= lowHitDamage * OponentHealthScript.Strength;
         }
         if (MyHealthScript.HealthPoints > 0)
             StartCoroutine(LowHit());

@@ -415,9 +415,9 @@ public class FighterAI : MonoBehaviour
         //Check distance
         if(checkDistance())
             CurrentState = _CurrentState = AISTATE.CHASE;
-        else if (ResilienceCheck() || FHealthScript.Stamina >= (FHealthScript.highAttackCost + Random.Range(0, FHealthScript.FitnessLevel)))
+        else if (ResilienceCheck() || FHealthScript.Stamina >= (FHealthScript.highAttackCost + Random.Range(0, (int)FHealthScript.FitnessLevel)))
             CurrentState = _CurrentState = AISTATE.ATTACKHIGH;
-        else if (ResilienceCheck() || FHealthScript.Stamina >= (FHealthScript.lowAttackCost + Random.Range(0, FHealthScript.FitnessLevel)))
+        else if (ResilienceCheck() || FHealthScript.Stamina >= (FHealthScript.lowAttackCost + Random.Range(0, (int)FHealthScript.FitnessLevel)))
             CurrentState = _CurrentState = AISTATE.ATTACKLOW;
     }
 
