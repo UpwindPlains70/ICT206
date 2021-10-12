@@ -36,11 +36,8 @@ public class FighterHealth : MonoBehaviour
     //rate of which stamina is recovered (in seconds)
     public int RecoveryRate { get; set; }
 
-    //chance to block (linked to reationLevel)
+    //chance to block
     public int BlockChance { get; set; }
-
-    //used to determine block or retreat on low stamina
-    public int ReactionLevel { get; set; }
     
     //Max stamina to remain before stopping attack
     public int FitnessLevel { get; set; }
@@ -99,7 +96,6 @@ public class FighterHealth : MonoBehaviour
     {
         Resilience = 0.4f;
         FitnessLevel = 50;
-        ReactionLevel = 50;
         BlockChance = 50;
 
         RecoveryRate = 2;
@@ -112,7 +108,7 @@ public class FighterHealth : MonoBehaviour
 
     public IEnumerator Recover()
     {
-        while (Stamina <= Random.Range(Stamina, _MaxStaminaDefault * Resilience) || HealthPoints <= Random.Range(HealthPoints, _MaxHealthDefault * Resilience))
+        do
         {
             Stamina += StaminaRecovery;
 
@@ -121,7 +117,7 @@ public class FighterHealth : MonoBehaviour
                 HealthPoints += HealthRecovery;
 
             yield return new WaitForSeconds(RecoveryRate);
-        }
+        } while (Stamina <= Random.Range(Stamina, _MaxStaminaDefault * Resilience) || HealthPoints <= Random.Range(HealthPoints, _MaxHealthDefault * Resilience));
     }
 
     void Update()

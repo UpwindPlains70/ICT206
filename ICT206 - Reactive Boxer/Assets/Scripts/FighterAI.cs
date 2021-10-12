@@ -309,10 +309,11 @@ public class FighterAI : MonoBehaviour
     private void BlockOrRetreat()
     {
         //chance to block
-        if (Random.Range(0, FHealthScript.ReactionLevel) < FHealthScript.BlockChance)
+        if (Random.Range(0, 100) > FHealthScript.BlockChance)
             CurrentState = _CurrentState = AISTATE.BLOCK;
         else
             CurrentState = _CurrentState = AISTATE.RETREAT;
+
     }
 
     public IEnumerator StateAttackLow()
@@ -339,6 +340,7 @@ public class FighterAI : MonoBehaviour
 
     public IEnumerator StateBlock()
     {
+        Debug.Log("Block");
         while (CurrentState == AISTATE.BLOCK)
         {
             //Check punch direction
@@ -388,6 +390,7 @@ public class FighterAI : MonoBehaviour
 
     public IEnumerator StateRetreat()
     {
+        Debug.Log("retreat");
         while (CurrentState == AISTATE.RETREAT)
         {
             anim.SetBool("move", true);
@@ -420,6 +423,7 @@ public class FighterAI : MonoBehaviour
 
     public IEnumerator StateDefeat()
     {
+        victory.SetActive(false);
         anim.StopPlayback();//Check punch direction
         if (myRSensor.leftHit)
             anim.SetFloat("DefeatType", 1); //Left
