@@ -27,42 +27,6 @@ public class FighterHealth : MonoBehaviour
     public float highAttackCost = 15;
     public float lowAttackCost = 5;
 
-    //Max stamina to remain before stopping attack
-    //public int fitnessLevel = 50;
-    //used to determine block or retreat on low stamina
-    //public int reactionLevel = 50;
-    //chance to block (linked to reationLevel)
-    //public int nonBlockingChance = 20;
-
-    //rate of which stamina is recovered (in seconds)
-    //public int recoveryRate = 2;
-    //public int staminaRecovery = 10;
-
-    //public int healthRecovery = 5;
-
-    //public float maxResilience = 0.40f;
-
-   /* private void OnValidate()
-    {
-            //Min Max health information
-        _HealthPoints = Mathf.Clamp(_HealthPoints, 10, 1000);
-        healthRecoveryChance = Mathf.Clamp(healthRecoveryChance, 1, 10);
-        healthRecovery = Mathf.Clamp(healthRecovery, 50, 1000);
-        
-            //Min Max stamina information
-        _MaxStamina = Mathf.Clamp(_MaxStamina, 50, 1000);
-        recoveryRate = Mathf.Clamp(recoveryRate, 1, 10);
-        staminaRecovery = Mathf.Clamp(staminaRecovery, 50, 1000);
-
-            //Min Max strength information
-        _MaxStrength = Mathf.Clamp(_MaxStrength, 1, 10);
-
-        nonBlockingChance = Mathf.Clamp(nonBlockingChance, 0, 100);
-        reactionLevel = Mathf.Clamp(reactionLevel, 0, 100);
-        fitnessLevel = Mathf.Clamp(fitnessLevel, 0, 100);
-
-    }*/
-
     //Amount health is recovered
     public int HealthRecovery { get; set; }
 
@@ -81,7 +45,7 @@ public class FighterHealth : MonoBehaviour
     //Max stamina to remain before stopping attack
     public int FitnessLevel { get; set; }
 
-    //Percentage that con be lost/used before requiring a change of action
+    //Percentage that can be lost/used before requiring a change of action
     public float Resilience
     {
         get; set;

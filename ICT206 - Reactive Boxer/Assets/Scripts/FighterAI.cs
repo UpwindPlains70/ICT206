@@ -280,8 +280,12 @@ public class FighterAI : MonoBehaviour
 
             yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length);
 
-            ActionAfterRecovery();
-            anim.SetBool("block", false);
+                //Keep action until resilience has replenished
+            if (ResilienceCheck() == false)
+            {
+                ActionAfterRecovery();
+                anim.SetBool("block", false);
+            }
         }
     }
 
@@ -289,7 +293,7 @@ public class FighterAI : MonoBehaviour
     {
         while (CurrentState == AISTATE.DODGE)
         {
-            Debug.Log("Didging");
+            Debug.Log("Dodging");
             //anim.StopPlayback();
             //Check punch direction
             if (myRSensor.leftHit)
@@ -302,6 +306,7 @@ public class FighterAI : MonoBehaviour
             anim.SetBool("dodge", true);
 
             yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length);
+
             anim.SetBool("dodge", false);
             ActionAfterRecovery();
         }
@@ -317,9 +322,12 @@ public class FighterAI : MonoBehaviour
 
             //Wait for animation to finish until applying stamina penalty
             yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length);
-            ActionAfterRecovery();
 
-            yield return null;
+            if (ResilienceCheck() == false)
+            {
+                ActionAfterRecovery();
+                anim.SetBool("move", false);
+            }
         }
     }
 
@@ -335,6 +343,7 @@ public class FighterAI : MonoBehaviour
 
         return false;
     }
+
     private void ActionAfterRecovery()
     {
         //Use random range to prevent AI from attacking with minimal stamina
@@ -390,5 +399,15 @@ public class FighterAI : MonoBehaviour
         this.transform.position = initialPos;
 
         CurrentState = _CurrentState = AISTATE.CHASE;
+    }
+
+    public void disableAgent()
+    {
+        ThisAgent.enabled = false;
+    }
+
+    public void enableAgent()
+    {
+        ThisAgent.enabled = true;
     }
 }
