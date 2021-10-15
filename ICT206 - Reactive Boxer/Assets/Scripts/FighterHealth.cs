@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Events;
 
-[RequireComponent(typeof(Animator))]
+//Defines & stores all stats for a fighter
 public class FighterHealth : MonoBehaviour
 {
     public UnityEvent OnHealthChanged;
@@ -59,13 +59,6 @@ public class FighterHealth : MonoBehaviour
             //Prevent health exceding maximum
             if (_HealthPoints > _MaxHealthDefault)
                 _HealthPoints = _MaxHealthDefault;
-
-            //Handled in AI
-            /*if (_HealthPoints <= 0)
-            {
-                //StopAllCoroutines();
-                //StartCoroutine(myAI.StateDefeat());
-            }*/
         }
     }
     public float Stamina
@@ -106,10 +99,12 @@ public class FighterHealth : MonoBehaviour
         _MaxHealthDefault = _HealthPoints;
     }
 
+        //Controls how the fighter recovers health/stamina
     public IEnumerator Recover()
     {
         do
         {
+            //Always recover stamina
             Stamina += StaminaRecovery;
 
             //chance to recover health
@@ -118,31 +113,6 @@ public class FighterHealth : MonoBehaviour
 
             yield return new WaitForSeconds(RecoveryRate);
         } while (Stamina <= Random.Range(Stamina, _MaxStaminaDefault * Resilience) || HealthPoints <= Random.Range(HealthPoints, _MaxHealthDefault * Resilience));
-    }
-
-    void Update()
-    {
-    }
-
-    void HealthCheck()
-    {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            HealthPoints = 0;
-        }
-    }
-
-    void StaminaCheck()
-    {
-        if (Input.GetKeyDown(KeyCode.S))
-        {
-            Stamina = 0;
-        }
-    }
-
-    public void increaseStamina(float newStam)
-    {
-            Stamina += newStam;
     }
 
     public float getMaxStamina()
@@ -155,6 +125,8 @@ public class FighterHealth : MonoBehaviour
         return _MaxHealthDefault;
     }
 
+        //Used on restart & main menu buttons in GameOver
+        //These stats are the only ones changed
     public void ResetStats()
     {
         HealthPoints = _MaxHealthDefault;

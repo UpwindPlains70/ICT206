@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+//Allows for camera movement
 public class CameraClass : MonoBehaviour
 {
 
@@ -23,11 +24,11 @@ public class CameraClass : MonoBehaviour
     void Update()
     {
             //makes the camera rotate around "point" coords, rotating around its Y axis, 10 degrees per second times the speed modifier
-        if(MainMenu)
+        if(MainMenu) //Pan camera in Main menu
             transform.RotateAround(point, new Vector3(0.0f, 1.0f, 0.0f), 10 * Time.deltaTime * menuSpeedMod);
-        else if(Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
+        else if(Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow)) //Move camera left
             transform.RotateAround(point, new Vector3(0.0f, 1.0f, 0.0f), 10 * Time.deltaTime * gameSpeedMod);
-        else if(!MainMenu && (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)))
+        else if(!MainMenu && (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))) //Move camera right
             transform.RotateAround(point, new Vector3(0.0f, 1.0f, 0.0f), 10 * Time.deltaTime * -gameSpeedMod);
 
             //camera pan (same as Main menu)
@@ -37,6 +38,8 @@ public class CameraClass : MonoBehaviour
             MainMenu = true;
     }
 
+        //Used by Menu's Play, Replay, MainMenu buttons
+        //Sets the camera to the original position
     public void ResetCamPos()
     {
         transform.position = initPos;

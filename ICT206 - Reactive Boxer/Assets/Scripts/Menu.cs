@@ -5,6 +5,8 @@ using UnityEngine.SceneManagement;
 using TMPro;
 using UnityEngine.UI;
 
+//Defines all behavoiur for the User Interface
+//Controls: GameOver, HUD, MainMenu, Pause Menu & Settings Menu
 public class Menu : MonoBehaviour
 {
     private FighterAI fighterA_AI;
@@ -39,10 +41,6 @@ public class Menu : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
-        FighterA_State();
-        FighterB_State();
-
         if(Input.GetKeyDown(KeyCode.Escape) && !paused && gameStarted)
         {
             paused = true;
@@ -52,6 +50,9 @@ public class Menu : MonoBehaviour
             paused = false;
             ResumeGame();
         }
+
+        FighterA_State();
+        FighterB_State();
 
         if (fighterA_AI != null && (fighterA_AI.CurrentState == FighterAI.AISTATE.VICTORY || fighterA_AI.CurrentState == FighterAI.AISTATE.DEFEAT))
         {

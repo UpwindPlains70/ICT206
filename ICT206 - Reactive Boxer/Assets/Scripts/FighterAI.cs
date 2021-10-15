@@ -1,15 +1,16 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-//using System.Collections;
-//using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
+//Define the state machine for a fighter
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(FighterHealth))]
 public class FighterAI : MonoBehaviour
 {
     public enum AISTATE { CHASE = 0, ATTACKLOW = 1, ATTACKHIGH = 2, BLOCK = 3, DODGE = 4, RETREAT = 5, DEFEAT = 6, VICTORY = 7, ESCAPE = 8};
+    
+        //Defines handling of state matchine (executes state functions)
     public AISTATE CurrentState
     {
         get { return _CurrentState; }
@@ -58,10 +59,6 @@ public class FighterAI : MonoBehaviour
     private NavMeshAgent ThisAgent = null;
     [SerializeField]
     private Transform Oponent; 
-    [SerializeField]
-    private Transform OponentLeftGlove; 
-    [SerializeField]
-    private Transform OponentRightGlove;
 
     private Transform ThisTransform = null;
     private float attackRange = 1.0f;
@@ -70,10 +67,6 @@ public class FighterAI : MonoBehaviour
     private FighterHealth FHealthScript;
     private Animator anim;
     private ReactiveSensor myRSensor;
-
-    //Stores local refences to Fighter health values
-    //private int fitnessLevel, reactionLevel, blockingChance;
-    //private float maxResilience, highAttackCost, lowAttackCost;
 
     public GameObject victory;
     private Vector3 initialPos;
@@ -88,15 +81,8 @@ public class FighterAI : MonoBehaviour
         ThisAgent = GetComponent<NavMeshAgent>();
         myRSensor = GetComponent<ReactiveSensor>();
 
-        //GetComponent<Transform>();
         ThisTransform = GetComponent<Transform>();
 
-        /*fitnessLevel = FHealthScript.FitnessLevel;
-        reactionLevel = FHealthScript.ReactionLevel;
-        blockingChance = FHealthScript.BlockChance;
-        highAttackCost = FHealthScript.highAttackCost;
-        lowAttackCost = FHealthScript.lowAttackCost;
-        maxResilience = FHealthScript.Resilience;*/
         CurrentState = _CurrentState;
     }
 
@@ -110,39 +96,49 @@ public class FighterAI : MonoBehaviour
         StopAllCoroutines();
     }
 
+        //Called every physics cycle
     public void FixedUpdate()
     {
         if (CurrentState != AISTATE.DEFEAT && CurrentState != AISTATE.VICTORY)
         {
+                //Initiates CHASE state
             if (!checkDistance() && CurrentState != AISTATE.CHASE)
                 CurrentState = _CurrentState = AISTATE.CHASE;
 
+                //Initiates the dodge state (results in a jittery fight)
             //if (CurrentState != AISTATE.CHASE && CurrentState != AISTATE.RETREAT && CurrentState != AISTATE.DODGE && Random.Range(0, 100) < reactionLevel)
             //    CurrentState = _CurrentState = AISTATE.DODGE;
 
-            if(CurrentState == AISTATE.CHASE || Random.Range(0,2) == 1)
+                //Ensures the fighter looks at their oponent
+            if (CurrentState == AISTATE.CHASE || Random.Range(0,2) == 1)
                 LookAtOponent();
 
+                //trigger DEFEAT/VICTROY state on 0 health & no prior call
             if (FHealthScript.HealthPoints <= 0 && CurrentState != AISTATE.DEFEAT)
             {
                 CurrentState = _CurrentState = AISTATE.DEFEAT;
                 Oponent.GetComponent<FighterAI>().CurrentState = AISTATE.VICTORY;
             }
             
+                //Controles retreat movement of navMeshAgent
             if (CurrentState == AISTATE.RETREAT)
             {
                 EvadeOponent();
             }
 
+                //Controles subtle movement of fighter
             if (CurrentState != AISTATE.CHASE && CurrentState != AISTATE.RETREAT && CurrentState != AISTATE.ESCAPE && Random.Range(0, 4) == 1)
                 subtleMovement();
         }
     }
 
+        //Keeps the fighter a curtain distance from oponent to recover
     private void EvadeOponent()
     {
+            //Distance from fighter to oponent
         float distance = Vector3.Distance(transform.position, Oponent.position);
 
+            //If not far enough away move oposite direction
         if (distance < oponentDistanceOnRetreat)
         {
             Vector3 dirToOponent = transform.position - Oponent.position;
@@ -153,9 +149,11 @@ public class FighterAI : MonoBehaviour
         }
     }
 
+        //Keeps fighter looking at oponent & targets oponent
     private void LookAtOponent()
     {
-        if(CurrentState != AISTATE.ESCAPE)
+            //Only target oponent if not ESCAPE or RETREAT state
+        if(CurrentState != AISTATE.ESCAPE && CurrentState != AISTATE.RETREAT)
             ThisAgent.SetDestination(Oponent.position);
 
         //Keep track of moving target
@@ -165,14 +163,18 @@ public class FighterAI : MonoBehaviour
         transform.rotation = Quaternion.Slerp(transform.rotation, lookRot, Mathf.Clamp01(3.0f * Time.maximumDeltaTime));
     }
 
+        //Gives fighter subtle movement (prevents them staying in one position)
+        //Results in slide movement (minimal animation)
     private void subtleMovement()
     {
         float distance = Vector3.Distance(transform.position, Oponent.position);
         Vector3 dirToOponent = Vector3.zero;
 
+            //If within attack range (1) move around oponent 
         if (distance <= attackRange)
         {
             anim.SetBool("move", true);
+                //50/50 chance to move left or right
             if (Random.Range(0, 2) == 1)
                 dirToOponent = transform.position + Oponent.position;
             else
@@ -183,6 +185,7 @@ public class FighterAI : MonoBehaviour
             ThisAgent.SetDestination(newPos);
         }
     }
+
     //returns true of distance is within range
     private bool checkDistance()
     {
@@ -195,7 +198,9 @@ public class FighterAI : MonoBehaviour
 
         return false;
     }
-    public IEnumerator StateChase()
+
+    //Defines behaviour for CHASE state
+    private IEnumerator StateChase()
     {
         while (CurrentState == AISTATE.CHASE)
         {
@@ -214,7 +219,10 @@ public class FighterAI : MonoBehaviour
         }
     }
 
-    public Vector3 RandomNavmeshLocation(float radius)
+        //Calc random point on navMesh
+        //Used by ESCAPE state
+        //source: https://answers.unity.com/questions/475066/how-to-get-a-random-point-on-navmesh.html
+    private Vector3 RandomNavmeshLocation(float radius)
     {
         Vector3 finalPosition = Vector3.zero;
         bool posFound = false;
@@ -246,11 +254,13 @@ public class FighterAI : MonoBehaviour
         return finalPosition;
     }
 
-    public IEnumerator StateEscape()
+    //Defines behaviour for CHESCAPEASE state
+    private IEnumerator StateEscape()
     {
         Vector3 dest = RandomNavmeshLocation(5f);
         while (CurrentState == AISTATE.ESCAPE)
-        {            
+        {         
+                //Set escape point
             ThisAgent.SetDestination(dest);
             Debug.DrawRay(dest, Vector3.up, Color.green);
 
@@ -268,13 +278,14 @@ public class FighterAI : MonoBehaviour
 
                 yield break;
             }
-
+                //wait for 2seconds then try again
             yield return new WaitForSeconds(2);
             dest = RandomNavmeshLocation(5f);
         }
     }
 
-    public IEnumerator StateAttackHigh()
+    //Defines behaviour for ATTACKHIGH state
+    private IEnumerator StateAttackHigh()
     {
         while (CurrentState == AISTATE.ATTACKHIGH)
         {
@@ -285,20 +296,25 @@ public class FighterAI : MonoBehaviour
             //Wait for animation to finish until applying stamina penalty
             yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length);
 
+                //Reduce stamina
             FHealthScript.Stamina -= FHealthScript.highAttackCost;
+
+                //Enter rocovery if found true
             if (ResilienceCheck() || FHealthScript.Stamina < FHealthScript.highAttackCost || FHealthScript.Stamina <= Random.Range(0, FHealthScript.FitnessLevel))
             {
                 anim.SetBool("attackHigh", false);
                 BlockOrRetreat();
             }
-        yield return null;
+            yield return null;
         }
     }
 
+        //Returns true if stamina/health is less than a random range based on Resilience value
+        //other returns false
     private bool ResilienceCheck()
     {
-        if (FHealthScript.Stamina <= FHealthScript.Stamina * Random.Range(0.1f, FHealthScript.Resilience) ||
-            FHealthScript.HealthPoints <= FHealthScript.HealthPoints * Random.Range(0.1f, FHealthScript.Resilience))
+        if (FHealthScript.Stamina >= FHealthScript.Stamina * Random.Range(0.1f, FHealthScript.Resilience) ||
+            FHealthScript.HealthPoints >= FHealthScript.HealthPoints * Random.Range(0.1f, FHealthScript.Resilience))
         {
             return true;
         }
@@ -306,17 +322,20 @@ public class FighterAI : MonoBehaviour
         return false;
     }
 
+        //Defines which recovery state to enter
+        //Dependant on BlockChance variable (higher = more likey to block)
     private void BlockOrRetreat()
     {
         //chance to block
-        if (Random.Range(0, 100) > FHealthScript.BlockChance)
+        if (Random.Range(1, 101) < FHealthScript.BlockChance)
             CurrentState = _CurrentState = AISTATE.BLOCK;
         else
             CurrentState = _CurrentState = AISTATE.RETREAT;
 
     }
 
-    public IEnumerator StateAttackLow()
+        //Defines behaviour for ATTACKLOW state
+    private IEnumerator StateAttackLow()
     {
         while (CurrentState == AISTATE.ATTACKLOW)
         {
@@ -327,8 +346,10 @@ public class FighterAI : MonoBehaviour
             //Wait for animation to finish until applying stamina penalty
             yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length);
 
+                //Reduce stamina
             FHealthScript.Stamina -= FHealthScript.lowAttackCost;
 
+                //Enter rocovery if found true
             if (ResilienceCheck() || FHealthScript.Stamina < FHealthScript.lowAttackCost || FHealthScript.Stamina <= Random.Range(0, FHealthScript.FitnessLevel))
             {
                 anim.SetBool("attackLow", false);
@@ -338,9 +359,9 @@ public class FighterAI : MonoBehaviour
         }
     }
 
-    public IEnumerator StateBlock()
+        //Defines behaviour for BLOCK state
+    private IEnumerator StateBlock()
     {
-        Debug.Log("Block");
         while (CurrentState == AISTATE.BLOCK)
         {
             //Check punch direction
@@ -353,6 +374,7 @@ public class FighterAI : MonoBehaviour
 
             anim.SetBool("block", true);
 
+                //Start recovery
             StartCoroutine(FHealthScript.Recover());
 
             yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length);
@@ -366,7 +388,8 @@ public class FighterAI : MonoBehaviour
         }
     }
 
-    public IEnumerator StateDodge()
+        //Defines behaviour for CHASE state
+    private IEnumerator StateDodge()
     {
         while (CurrentState == AISTATE.DODGE)
         {
@@ -388,18 +411,20 @@ public class FighterAI : MonoBehaviour
         }
     }
 
-    public IEnumerator StateRetreat()
+        //Defines behaviour for CHASE state
+    private IEnumerator StateRetreat()
     {
-        Debug.Log("retreat");
         while (CurrentState == AISTATE.RETREAT)
         {
             anim.SetBool("move", true);
 
+            //Start recovery
             StartCoroutine(FHealthScript.Recover());
 
             //Wait for animation to finish until applying stamina penalty
             yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length);
-
+                
+                //if recovered enough continue fighting
             if (ResilienceCheck() == false)
             {
                 ActionAfterRecovery();
@@ -408,10 +433,10 @@ public class FighterAI : MonoBehaviour
         }
     }
 
+        //Allows fighter to continue fighting after recovering
     private void ActionAfterRecovery()
     {
         //Use random range to prevent AI from attacking with minimal stamina
-        //UPDATE: add distance to gloves check
         //Check distance
         if(checkDistance())
             CurrentState = _CurrentState = AISTATE.CHASE;
@@ -421,7 +446,8 @@ public class FighterAI : MonoBehaviour
             CurrentState = _CurrentState = AISTATE.ATTACKLOW;
     }
 
-    public IEnumerator StateDefeat()
+        //Defines behaviour for CHASE state
+    private IEnumerator StateDefeat()
     {
         victory.SetActive(false);
         anim.StopPlayback();//Check punch direction
@@ -439,7 +465,8 @@ public class FighterAI : MonoBehaviour
             yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length);
     }
 
-    public IEnumerator StateVictory()
+        //Defines behaviour for CHASE state
+    private IEnumerator StateVictory()
     {
         anim.StopPlayback();
         victory.SetActive(true);
@@ -451,12 +478,12 @@ public class FighterAI : MonoBehaviour
         yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length);
     }
 
+        //Reset animation Parameters & CurrentState & position
     public void ResetAI()
     {
         anim.SetBool("Defeat", false);
         anim.SetBool("Victory", false);
         anim.SetBool("block", false);
-        anim.SetBool("dodge", false);
         anim.SetBool("attackHigh", false);
         anim.SetBool("attackLow", false);
 
@@ -466,11 +493,13 @@ public class FighterAI : MonoBehaviour
         CurrentState = _CurrentState = AISTATE.CHASE;
     }
 
+        //Turn off navMeshAgent script
     public void disableAgent()
     {
         ThisAgent.enabled = false;
     }
 
+        //Turn on navMeshAgent script
     public void enableAgent()
     {
         ThisAgent.enabled = true;

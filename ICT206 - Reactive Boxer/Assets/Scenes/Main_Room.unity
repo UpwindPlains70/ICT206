@@ -1328,9 +1328,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1001387337}
-        m_MethodName: SetActive
-        m_Mode: 6
+      - m_Target: {fileID: 1171873907}
+        m_MethodName: Restart
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -1338,17 +1338,6 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 961021814}
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
         m_CallState: 2
       - m_Target: {fileID: 4548404645753961080}
         m_MethodName: set_enabled
@@ -1372,20 +1361,20 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 1171873907}
-        m_MethodName: Restart
-        m_Mode: 1
+      - m_Target: {fileID: 1001387337}
+        m_MethodName: SetActive
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 1
+          m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 1171873907}
-        m_MethodName: GameStopped
-        m_Mode: 1
+      - m_Target: {fileID: 961021814}
+        m_MethodName: SetActive
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -11044,6 +11033,17 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
+      - m_Target: {fileID: 155044406}
+        m_MethodName: set_value
+        m_Mode: 4
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 1
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
 --- !u!114 &949370371
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11692,6 +11692,17 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 155044406}
+        m_MethodName: set_value
+        m_Mode: 4
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 1
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1006274447
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11789,7 +11800,7 @@ MonoBehaviour:
   m_FillRect: {fileID: 649871475}
   m_HandleRect: {fileID: 1401594664}
   m_Direction: 0
-  m_MinValue: 10
+  m_MinValue: 25
   m_MaxValue: 1000
   m_WholeNumbers: 1
   m_Value: 100
@@ -22725,7 +22736,7 @@ MonoBehaviour:
   m_FillRect: {fileID: 1451710060}
   m_HandleRect: {fileID: 1232416587}
   m_Direction: 0
-  m_MinValue: 10
+  m_MinValue: 25
   m_MaxValue: 1000
   m_WholeNumbers: 1
   m_Value: 100
@@ -23789,8 +23800,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _CurrentState: 0
   Oponent: {fileID: 3770917247360884937}
-  OponentLeftGlove: {fileID: 1286193393}
-  OponentRightGlove: {fileID: 286709348}
   oponentDistanceOnRetreat: 2
   victory: {fileID: 314726791}
 --- !u!95 &1983295698
@@ -23803,7 +23812,7 @@ Animator:
   m_GameObject: {fileID: 919132147850544046}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: d9b3ffe1fbbdc0241b41b8f98adb40dc, type: 3}
-  m_Controller: {fileID: 9100000, guid: b343cb3b2a48c9b40ac174578a7c9a3e, type: 2}
+  m_Controller: {fileID: 9100000, guid: a6aaaba11fccf6b4a8e8182b2f22f740, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -26420,74 +26429,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 125032803599465064}
   m_Mesh: {fileID: 3850346725410894980, guid: 6e4c7af3888bb4342b204d2fde37234f, type: 3}
---- !u!1 &125032803610752202
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 125032804314546312}
-  - component: {fileID: 125032803610752204}
-  - component: {fileID: 125032803610752205}
-  m_Layer: 0
-  m_Name: Lockers Variant
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 4
-  m_IsActive: 1
---- !u!33 &125032803610752204
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 125032803610752202}
-  m_Mesh: {fileID: 7348556155622324996, guid: c010b8dc680b6a14fa6a04a1cb9de161, type: 3}
---- !u!23 &125032803610752205
-MeshRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 125032803610752202}
-  m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: 5133c00f0334b834b99d762a822b86db, type: 2}
-  - {fileID: 2100000, guid: a81479cc80428fa44bf6cfe55db426d7, type: 2}
-  - {fileID: 2100000, guid: a81479cc80428fa44bf6cfe55db426d7, type: 2}
-  - {fileID: 2100000, guid: 10296c4f90644d64ab4f5b857b97e462, type: 2}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
 --- !u!4 &125032803626316038
 Transform:
   m_ObjectHideFlags: 0
@@ -26801,7 +26742,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 125032804204747568}
-  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.0025, y: 0.016983164, z: 0.0000000011920929}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -26816,20 +26757,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 125032804204747568}
   m_Mesh: {fileID: 2616716275562604785, guid: 6e4c7af3888bb4342b204d2fde37234f, type: 3}
---- !u!4 &125032804314546312
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 125032803610752202}
-  m_LocalRotation: {x: 0, y: 0, z: -1, w: 0}
-  m_LocalPosition: {x: 0.0288, y: 0.0533, z: -0.017}
-  m_LocalScale: {x: 0.614565, y: 0.614565, z: 0.614565}
-  m_Children: []
-  m_Father: {fileID: 5207393743080497177}
-  m_RootOrder: 5
-  m_LocalEulerAnglesHint: {x: 180, y: 180, z: 0}
 --- !u!4 &125032804335110500
 Transform:
   m_ObjectHideFlags: 0
@@ -26917,7 +26844,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 125032804380496701}
   m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071067}
-  m_LocalPosition: {x: 5.29, y: -1.647, z: -3.3241806}
+  m_LocalPosition: {x: 5.29, y: -1.643, z: -6.3591824}
   m_LocalScale: {x: 120.000015, y: 120, z: 120}
   m_Children: []
   m_Father: {fileID: 447701141920082254}
@@ -27242,7 +27169,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 125032804731334817}
   m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071067}
-  m_LocalPosition: {x: 5.140062, y: -1.344, z: 0.21500188}
+  m_LocalPosition: {x: 5.140062, y: -1.34, z: -2.82}
   m_LocalScale: {x: 120.000015, y: 120, z: 120}
   m_Children:
   - {fileID: 125032804204747571}
@@ -30501,8 +30428,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _CurrentState: 0
   Oponent: {fileID: 543450651791087892}
-  OponentLeftGlove: {fileID: 1606830589}
-  OponentRightGlove: {fileID: 1181870200}
   oponentDistanceOnRetreat: 5
   victory: {fileID: 1477286947}
 --- !u!114 &4548404645753961079
@@ -30964,7 +30889,6 @@ Transform:
   - {fileID: 7768023578708902078}
   - {fileID: 7361950758994867146}
   - {fileID: 2045990544863070375}
-  - {fileID: 125032804314546312}
   m_Father: {fileID: 447701141920082254}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -32061,7 +31985,7 @@ Animator:
   m_GameObject: {fileID: 4548404645753961075}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: d9b3ffe1fbbdc0241b41b8f98adb40dc, type: 3}
-  m_Controller: {fileID: 9100000, guid: b343cb3b2a48c9b40ac174578a7c9a3e, type: 2}
+  m_Controller: {fileID: 9100000, guid: a6aaaba11fccf6b4a8e8182b2f22f740, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

@@ -13,11 +13,13 @@ public class SliderValueToText : MonoBehaviour
         ShowSliderValue();
     }
 
+        //Assign text field to show the value a the slider
     public void ShowSliderValue()
     {
+            //Output for whole number
         if(sliderUI.wholeNumbers)
             textSliderValue.text = "(" + sliderUI.value + ")";
-        else
+        else //Output for floating number (decimal point)
             textSliderValue.text = "(" + sliderUI.value.ToString("F2") + ")";
     }
 }

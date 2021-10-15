@@ -2,6 +2,8 @@
 using UnityEngine;
 using UnityEngine.AI;
 
+//Links the navMeshAgent to an animator showing 'smooth' movement
+//Source: https://docs.unity3d.com/Manual/nav-CouplingAnimationAndNavigation.html
 [RequireComponent(typeof(NavMeshAgent))]
 [RequireComponent(typeof(Animator))]
 public class LocomotionSimpleAgent : MonoBehaviour

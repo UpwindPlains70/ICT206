@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using System.Collections;
  
+//Allows a button to trigger another
 public class InvokeButton : MonoBehaviour
 {
  
@@ -13,6 +14,7 @@ public class InvokeButton : MonoBehaviour
             button = GetComponent<Button>();
     }
  
+        //Triggers the given button
     public void Invoke()
     {
         if (button != null && button.onClick != null)

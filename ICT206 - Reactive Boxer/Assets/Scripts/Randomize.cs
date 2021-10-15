@@ -5,6 +5,7 @@ using System;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
+//Used in Settings to randomize all variables
 public class Randomize : MonoBehaviour
 {
     public Slider Health;
@@ -23,6 +24,7 @@ public class Randomize : MonoBehaviour
 
     public Randomize otherRandomizer;
 
+        //Randomize the fighters variables
     public void RandomizeFighter()
     {
         Health.value = Random.Range(Health.minValue, Health.maxValue);
@@ -38,6 +40,8 @@ public class Randomize : MonoBehaviour
         environmentSensor.isOn = Convert.ToBoolean(Random.Range(0, 2)); 
     }
 
+        //Copy the other fighters variable data over
+        //makes it easy to create an 'equal' battle 
     public void Copy_A_to_B()
     {
         Health.value = otherRandomizer.Health.value;

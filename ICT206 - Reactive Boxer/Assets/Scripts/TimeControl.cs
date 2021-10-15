@@ -15,6 +15,7 @@ public class TimeControl : MonoBehaviour
     }
 
     // Update is called once per frame
+    //Displays the elapsed time for the current match
     void Update()
     {
         time += Time.deltaTime;
@@ -30,6 +31,8 @@ public class TimeControl : MonoBehaviour
         return time;
     }
 
+        //Reset the time
+        //Required due to single scene application
     public void ResetTime()
     {
         time = 0;

@@ -2,6 +2,8 @@
 using UnityEngine;
 using System.Collections;
 
+//Utilized by the LocomotionSimpleAgent script
+//Source: https://docs.unity3d.com/Manual/nav-CouplingAnimationAndNavigation.html
 [RequireComponent (typeof (Animator))]
 public class LookAt : MonoBehaviour {
 	public Transform head = null;
@@ -27,6 +29,7 @@ public class LookAt : MonoBehaviour {
 		lookAtPosition = lookAtTargetPosition;
 	}
 
+		//Control the look direction of the head
 	void OnAnimatorIK ()
 	{
 		lookAtTargetPosition.y = head.position.y;
